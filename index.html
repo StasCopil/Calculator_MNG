@@ -1,0 +1,3193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Пульс недвижимости — Калькулятор Руководителя</title>
+  <style>
+    @font-face {
+      font-family: 'Circe';
+      src: local('Circe'), local('Circe-Regular');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --brand-red: #FC403A;
+      --brand-dark: #130909;
+      --brand-grey: #D2D2D2;
+      --brand-light: #F1F1F1;
+      --white: #FFFFFF;
+      --panel: #F7F7F7;
+      --line: rgba(19, 9, 9, 0.08);
+      --muted: rgba(19, 9, 9, 0.58);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow: 0 18px 50px rgba(19, 9, 9, 0.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    html, body { 
+      margin: 0; 
+      min-height: 100vh; 
+      font-family: "Circe", "Segoe UI", Roboto, sans-serif; 
+      background:
+        linear-gradient(180deg, #FAFAFA 0%, var(--brand-light) 100%);
+      color: var(--brand-dark);
+      line-height: 1.4;
+    }
+
+    body { padding: clamp(8px, 1.2vw, 16px); display: flex; justify-content: center; align-items: flex-start; }
+
+    .container {
+      width: 100%;
+      max-width: min(1280px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(clamp(300px, 30vw, 380px), 0.65fr);
+      gap: clamp(10px, 1.4vw, 16px);
+    }
+
+    .card {
+      min-width: 0;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .app-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 40px;
+      column-gap: 16px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .app-brand {
+      grid-column: 1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 5px;
+    }
+
+    .app-logo {
+      display: block;
+      width: 100%;
+      max-width: 94px;
+      height: auto;
+      flex-shrink: 0;
+      background: var(--brand-dark); 
+      border-radius: 8px;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    .app-title span { color: var(--brand-red); }
+    .app-subtitle {
+      grid-column: 1;
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      color: var(--brand-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .input-group:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .toggle-nav {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      background: var(--panel);
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .toggle-btn {
+      border: none;
+      background: transparent;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 10px;
+      color: var(--brand-dark);
+      transition: var(--transition);
+      min-height: 38px;
+    }
+
+    .toggle-btn.active {
+      background: var(--white);
+      color: var(--brand-red);
+      box-shadow: 0 6px 16px rgba(19, 9, 9, 0.08);
+    }
+
+    .toggle-btn:focus-visible,
+    .logout-btn:focus-visible,
+    .reset-btn:focus-visible {
+      outline: 3px solid rgba(252, 64, 58, 0.2);
+      outline-offset: 2px;
+    }
+
+    .main-input:focus-visible {
+      outline: none;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--brand-dark);
+    }
+
+    .senior-revenue-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .rop-score-toggle.top3-rgp-toggle {
+      width: auto;
+      min-width: 0;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+
+    .top3-rgp-field .field-label {
+      text-align: left;
+      white-space: nowrap;
+      margin-bottom: 0;
+      font-size: 12px;
+    }
+
+    .top3-rgp-toggle .rop-score-btn {
+      flex: 0 0 38px;
+      min-height: 28px;
+      padding: 5px 6px;
+      font-size: 11px;
+    }
+
+    #top3RgpButtons .rop-score-btn {
+      border-color: rgba(19, 9, 9, 0.18);
+      background: var(--white);
+      color: var(--brand-dark);
+    }
+
+    #top3RgpButtons .rop-score-btn.active {
+      border-color: var(--brand-dark);
+      background: var(--brand-dark);
+      color: var(--white);
+    }
+
+    .top3-rgp-field {
+      display: grid;
+      grid-template-columns: max-content auto;
+      justify-content: center;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .top3-rgp-field .top3-rgp-hint {
+      grid-column: 1 / -1;
+    }
+
+    .top3-rgp-hint {
+      display: grid;
+      gap: 4px;
+      width: max-content;
+      max-width: 100%;
+      margin: 8px auto 0;
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .top3-rgp-hint span {
+      font-size: 10px;
+      font-weight: 500;
+      opacity: 0.68;
+      white-space: nowrap;
+    }
+
+    .top3-rgp-hint .hint-caption {
+      text-align: center;
+    }
+
+    .mode-note {
+      margin: 0 0 16px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--brand-red);
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .reset-btn {
+      width: 100%;
+      margin: 18px 0 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--brand-grey);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .reset-btn:hover {
+      border-color: rgba(252, 64, 58, 0.55);
+      color: var(--white);
+      background: rgba(252, 64, 58, 0.12);
+    }
+
+    .main-input {
+      width: 100%;
+      min-height: 50px;
+      background: var(--panel);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 21px;
+      font-weight: 800;
+      font-family: inherit;
+      color: var(--brand-dark);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .main-input::placeholder {
+      color: rgba(19, 9, 9, 0.32);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .main-input:focus {
+      border-color: rgba(19, 9, 9, 0.12);
+      background: var(--white);
+      box-shadow: inset 0 0 0 1px rgba(19, 9, 9, 0.03), 0 6px 14px rgba(19, 9, 9, 0.04);
+    }
+
+    .main-input[readonly] {
+      cursor: default;
+    }
+
+    .main-input[readonly]:focus,
+    .main-input[readonly]:focus-visible {
+      border-color: transparent;
+      box-shadow: none;
+      outline: none;
+    }
+
+    .commission-box {
+      background: var(--brand-dark);
+      padding: 18px;
+      border-radius: 16px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .readout-container {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .readout-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.72;
+      margin-bottom: 8px;
+    }
+
+    #dynamicRateNumber,
+    .rate-number {
+      background: transparent;
+      border: none;
+      color: var(--brand-red);
+      font-size: 38px;
+      font-weight: 900;
+      text-align: center;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+      cursor: default;
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .under12-rate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .under12-rate-grid .readout-label {
+      text-align: center;
+      min-height: 26px;
+    }
+
+    .under12-rate-grid .rate-number {
+      font-size: 30px;
+    }
+
+    .hint-text {
+      font-size: 12px;
+      opacity: 0.55;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .slider-wrap {
+      background: var(--panel);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+      margin: 12px 0;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: var(--slider-track-bg, linear-gradient(to right, var(--brand-red) 50%, rgba(19, 9, 9, 0.1) 50%));
+      border-radius: 2px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: var(--brand-red);
+      border: 4px solid var(--white);
+      cursor: grab;
+      margin-top: -10px;
+      box-shadow: 0 4px 10px rgba(252, 64, 58, 0.4);
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .range-note {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      overflow-x: auto;
+      white-space: nowrap;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .range-note span {
+      white-space: nowrap;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 10px rgba(19, 9, 9, 0.04);
+    }
+
+    .bonus-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .bonus-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .bonus-grid .main-input {
+      font-size: 20px;
+    }
+
+    .bonus-row .inline-field {
+      grid-template-columns: minmax(0, 0.9fr) minmax(150px, 1.1fr);
+    }
+
+    .bonus-row .main-input {
+      min-width: 0;
+      font-size: 17px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .newbie-count-field {
+      grid-template-columns: 1fr;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--white);
+    }
+
+    .newbie-count-field .field-label {
+      color: var(--brand-dark);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .newbie-count-field .main-input {
+      min-height: 46px;
+      background: var(--white);
+      border-color: rgba(19, 9, 9, 0.28);
+      box-shadow: inset 0 0 0 1px rgba(19, 9, 9, 0.08), 0 6px 14px rgba(19, 9, 9, 0.04);
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .under12-bonus-title-hidden {
+      display: none;
+    }
+
+    #under12BonusMount {
+      display: contents;
+    }
+
+    #under12BonusMount #seniorBonusSection {
+      display: contents;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    #under12BonusMount .newbie-list-header,
+    #under12BonusMount .newbie-list {
+      grid-column: 1 / -1;
+    }
+
+    #under12BonusMount .bonus-grid {
+      display: contents;
+    }
+
+    #under12BonusMount .bonus-row {
+      display: none;
+    }
+
+    #under12BonusMount .inline-field.newbie-count-field {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 18px auto;
+      gap: 6px;
+      align-items: stretch;
+      height: 100%;
+      padding: 9px 10px;
+    }
+
+    #under12BonusMount .newbie-count-field .field-label {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    #under12BonusMount .newbie-count-field .main-input {
+      min-height: 36px;
+      height: 36px;
+      padding: 7px 9px;
+      font-size: 14px;
+    }
+
+    .under12-rop-bonus-card {
+      width: min(100%, 300px);
+      justify-self: center;
+      grid-column: 1 / -1;
+      grid-template-columns: max-content auto;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .under12-rop-bonus-card .field-label {
+      white-space: nowrap;
+    }
+
+    .under12-rop-bonus-card .rop-score-toggle {
+      width: auto;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .under12-rop-bonus-card .rop-score-btn {
+      flex: 0 0 36px;
+      min-height: 28px;
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+
+    .side-under12-bonus-mount {
+      margin-top: auto;
+      padding-top: 18px;
+    }
+
+    .side-under12-bonus-mount .under12-rop-bonus-card {
+      width: 100%;
+    }
+
+    .under12-panel {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+
+    .under12-header {
+      display: grid;
+      gap: 4px;
+    }
+
+    .under12-eyebrow {
+      margin: 0;
+      color: var(--brand-red);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .under12-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 900;
+      color: var(--brand-dark);
+    }
+
+    .under12-subtitle {
+      margin: 0;
+      max-width: 680px;
+      font-size: 11px;
+      line-height: 1.25;
+      color: var(--muted);
+    }
+
+    .under12-block {
+      display: grid;
+      gap: 6px;
+    }
+
+    .under12-block-title {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .under12-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .under12-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .under12-card,
+    .under12-month {
+      display: grid;
+      grid-template-rows: 18px auto;
+      gap: 6px;
+      width: 100%;
+      max-width: 100%;
+      min-height: auto;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: var(--white);
+      border: 1px solid var(--line);
+    }
+
+    .under12-month {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      min-height: auto;
+      height: max-content;
+      align-self: start;
+      max-width: 100%;
+      background: var(--brand-dark);
+      border-color: var(--brand-dark);
+      color: var(--white);
+      box-shadow: 0 12px 28px rgba(19, 9, 9, 0.12);
+    }
+
+    .under12-card .main-input,
+    .under12-month .main-input {
+      height: 36px;
+      font-size: 14px;
+      padding: 7px 9px;
+    }
+
+    .under12-card .field-label {
+      min-height: 20px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .under12-card .main-input {
+      width: 100%;
+      min-height: 36px;
+      text-align: center;
+      background: var(--white);
+      border-color: rgba(19, 9, 9, 0.28);
+      box-shadow: inset 0 0 0 1px rgba(19, 9, 9, 0.08), 0 6px 14px rgba(19, 9, 9, 0.04);
+    }
+
+    .under12-combo-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+
+    .under12-combo-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 72px;
+      gap: 7px;
+      align-items: start;
+    }
+
+    .under12-combo-fields .main-input {
+      width: 100%;
+    }
+
+    .under12-combo-small .main-input {
+      text-align: center;
+    }
+
+    .under12-per-experienced {
+      grid-column: 1;
+      margin-top: -2px;
+      font-size: 9px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .under12-per-experienced strong {
+      color: var(--brand-dark);
+      font-weight: 800;
+    }
+
+    .under12-per-experienced.below,
+    .under12-per-experienced.below strong {
+      color: var(--brand-red);
+    }
+
+    .under12-per-experienced.equal,
+    .under12-per-experienced.equal strong {
+      color: #1f8f4d;
+    }
+
+    .under12-per-experienced.above,
+    .under12-per-experienced.above strong {
+      color: #6fa8dc;
+    }
+
+    .rop-score-toggle {
+      display: flex;
+      gap: 8px;
+      width: min(240px, 48%);
+      flex: 0 0 auto;
+    }
+
+    .rop-score-btn {
+      flex: 1;
+      min-height: 46px;
+      border: 1px solid rgba(19, 9, 9, 0.18);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--brand-dark);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .rop-score-btn.active {
+      border-color: var(--brand-dark);
+      background: var(--brand-dark);
+      color: var(--white);
+    }
+
+    .under12-month .main-input {
+      min-height: auto;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      color: var(--white);
+      font-size: 22px;
+      text-align: right;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .under12-card .field-label,
+    .under12-month .field-label,
+    .under12-kpi-row .field-label {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.25;
+      min-height: 0;
+    }
+
+    .under12-month .field-label {
+      color: rgba(255, 255, 255, 0.72);
+      white-space: nowrap;
+    }
+
+    .under12-month-label {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .under12-kpi-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      margin-top: 0;
+    }
+
+    .under12-kpi-row .under12-card {
+      grid-column: auto;
+    }
+
+    .under12-hint {
+      margin: 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .under12-rule-chips {
+      margin-top: -4px;
+      padding-top: 0;
+      border-top: 0;
+      justify-content: flex-start;
+    }
+
+    .under12-rule-chips span {
+      box-shadow: none;
+    }
+
+    .newbie-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .newbie-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .newbie-card[open] {
+      box-shadow: 0 12px 28px rgba(19, 9, 9, 0.05);
+    }
+
+    .newbie-card-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 5px 9px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .newbie-card-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .newbie-card-summary::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid rgba(19, 9, 9, 0.42);
+      border-bottom: 2px solid rgba(19, 9, 9, 0.42);
+      transform: rotate(45deg);
+      transition: var(--transition);
+    }
+
+    .newbie-card[open] .newbie-card-summary::after {
+      transform: rotate(225deg);
+    }
+
+    .newbie-card-title {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--brand-dark);
+    }
+
+    .newbie-card-meta {
+      display: block;
+      margin-top: 1px;
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .newbie-card-body {
+      padding: 0 9px 6px;
+      border-top: 1px solid var(--line);
+    }
+
+    .newbie-fields {
+      display: grid;
+      gap: 5px;
+      align-items: end;
+      justify-content: center;
+      margin: 0 auto;
+      padding-top: 5px;
+    }
+
+    .newbie-fields.no-days {
+      grid-template-columns: 94px 118px;
+      max-width: 220px;
+    }
+
+    .newbie-fields.has-days {
+      grid-template-columns: 88px 118px 72px;
+      max-width: 294px;
+    }
+
+    .newbie-control {
+      display: grid;
+      gap: 4px;
+    }
+
+    .newbie-control-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .newbie-fields .main-input {
+      min-height: 30px;
+      padding: 5px 8px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .newbie-month-toggle {
+      width: 100%;
+      min-height: 30px;
+      padding: 5px 8px;
+      border: 1px solid rgba(19, 9, 9, 0.1);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .newbie-month-toggle.active {
+      border-color: rgba(252, 64, 58, 0.28);
+      background: rgba(252, 64, 58, 0.08);
+      color: var(--brand-red);
+      box-shadow: none;
+    }
+
+    .newbie-list-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 190px;
+      gap: 12px;
+      align-items: end;
+      margin: 10px 0 8px;
+    }
+
+    #newbieListLabel {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.25;
+      opacity: 0.72;
+    }
+
+    .newbie-total-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .newbie-total-field .field-label {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .newbie-total-field .main-input {
+      min-height: 40px;
+      padding: 9px 12px;
+      font-size: 16px;
+      text-align: right;
+    }
+
+    .inline-field {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 120px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .inline-field .field-label {
+      margin-bottom: 0;
+    }
+
+    .result-card {
+      background: var(--brand-dark);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 12px;
+      border-color: rgba(255,255,255,0.08);
+      align-self: stretch;
+    }
+
+    .total-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+      font-weight: 700;
+    }
+
+    .total-amount {
+      font-size: clamp(26px, 2.8vw, 36px);
+      font-weight: 800;
+      margin: 8px 0;
+      color: var(--brand-red);
+      line-height: 1.08;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: visible;
+    }
+
+    .total-subtitle {
+      font-size: 13px;
+      line-height: 1.3;
+      margin-bottom: 10px;
+      min-height: 18px;
+      color: rgba(255,255,255,0.64);
+    }
+
+    .side-instruction {
+      margin: 10px 0 0;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .side-instruction-title {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.72);
+      list-style: none;
+    }
+
+    .side-instruction-title::-webkit-details-marker {
+      display: none;
+    }
+
+    .side-instruction ol {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 5px;
+      color: rgba(255,255,255,0.68);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .side-rules {
+      margin: 10px 0 0;
+      padding-top: 10px;
+      padding-left: 18px;
+      display: grid;
+      gap: 5px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.56);
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px;
+      gap: 12px;
+    }
+
+    .detail-label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .detail-row span { opacity: 0.68; }
+    .detail-row strong { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .detail-row.accent {
+      border-top: 2px solid var(--brand-red);
+      margin-top: 6px;
+      padding-top: 10px;
+      background: rgba(252, 64, 58, 0.06);
+      margin-left: -12px;
+      margin-right: -12px;
+      padding-left: 12px;
+      padding-right: 12px;
+      border-radius: 10px;
+    }
+    .detail-row.accent .detail-label span { opacity: 0.85; }
+    .detail-row.accent strong { color: var(--brand-red); font-size: 15px; }
+
+    body.under12-mode .detail-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.under12-mode .detail-block > .section-title { order: 0; }
+    body.under12-mode .detail-revenue { order: 1; }
+    body.under12-mode .detail-under12-newbie-revenue { order: 2; }
+    body.under12-mode .detail-under12-experienced-revenue { order: 3; }
+    body.under12-mode .detail-kpi { order: 4; }
+    body.under12-mode .detail-personal-deal { order: 5; }
+    body.under12-mode .detail-salary { order: 6; }
+    body.under12-mode .detail-newbie-bonus { order: 7; }
+    body.under12-mode .detail-gross { order: 8; }
+    body.under12-mode .detail-tax { order: 9; }
+    body.under12-mode .detail-final { order: 10; }
+    body.under12-mode .detail-disclaimer { order: 11; }
+
+    .payout-disclaimer {
+      margin: 6px 0 10px;
+      color: rgba(255,255,255,0.48);
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .result-card.senior-result {
+      padding: 16px;
+    }
+
+    .result-card.senior-result .total-label,
+    .result-card.senior-result .side-instruction-title {
+      font-size: 12px;
+    }
+
+    .result-card.senior-result .total-amount {
+      font-size: clamp(24px, 2.6vw, 34px);
+      margin: 5px 0;
+    }
+
+    .result-card.senior-result .total-subtitle {
+      font-size: 12px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      min-height: 0;
+    }
+
+    .result-card.senior-result .reset-btn {
+      margin: 8px 0 4px;
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+
+    .result-card.senior-result .side-rate-mount {
+      margin: 8px 0 0;
+      padding-top: 0;
+    }
+
+    .result-card.senior-result .side-top3-mount {
+      margin: min(18vh, 120px) 0 0;
+      padding-top: 16px;
+    }
+
+    .result-card.senior-result .top3-rgp-field {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      justify-content: stretch;
+      gap: 6px 8px;
+      padding: 10px;
+      border: 1px solid rgba(19, 9, 9, 0.12);
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--brand-dark);
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    .result-card.senior-result .top3-rgp-field .field-label {
+      color: var(--brand-dark);
+      font-size: 11px;
+    }
+
+    .result-card.senior-result .top3-rgp-field .rop-score-btn {
+      position: relative;
+      z-index: 3;
+      pointer-events: auto;
+      border-color: rgba(19, 9, 9, 0.18);
+      background: var(--white);
+      color: var(--brand-dark);
+      min-height: 34px;
+      min-width: 44px;
+    }
+
+    .result-card.senior-result .top3-rgp-field .rop-score-btn.active {
+      border-color: var(--brand-dark);
+      background: var(--brand-dark);
+      color: var(--white);
+    }
+
+    .result-card.senior-result .top3-rgp-hint {
+      margin: 2px 0 0;
+      color: var(--brand-dark);
+    }
+
+    .result-card.senior-result .top3-rgp-hint .hint-caption {
+      text-align: left;
+    }
+
+    .result-card.senior-result .top3-rgp-hint span {
+      color: var(--brand-dark);
+      font-size: 9px;
+    }
+
+    .result-card.senior-result .side-rate-mount .readout-container {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .result-card.senior-result .side-rate-mount .readout-label {
+      font-size: 10px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .result-card.senior-result .side-rate-mount .rate-number {
+      font-size: 30px;
+    }
+
+    .result-card.senior-result .detail-block .section-title {
+      margin-bottom: 6px !important;
+    }
+
+    .result-card.senior-result .detail-row {
+      padding: 5px 0;
+      font-size: 11px;
+      gap: 8px;
+    }
+
+    .result-card.senior-result .detail-row.accent {
+      margin-top: 5px;
+      padding-top: 8px;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-left: -10px;
+      margin-right: -10px;
+    }
+
+    .result-card.senior-result .detail-row.accent strong {
+      font-size: 14px;
+    }
+
+    .result-card.senior-result .payout-disclaimer {
+      margin: 5px 0 8px;
+      font-size: 9px;
+      line-height: 1.18;
+    }
+
+    .result-card.senior-result .side-instruction {
+      margin: 8px 0 0;
+      padding-top: 7px;
+    }
+
+    .result-card.senior-result .side-instruction ol {
+      margin: 7px 0 0;
+      padding-left: 16px;
+      gap: 3px;
+      font-size: 10px;
+      line-height: 1.18;
+    }
+
+    .result-card.senior-result .side-rules {
+      margin: 8px 0 0;
+      padding-top: 8px;
+      padding-left: 16px;
+      gap: 3px;
+      font-size: 9px;
+      line-height: 1.18;
+    }
+
+    body.senior-mode .left-card .input-group {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+
+    body.senior-mode {
+      padding: 8px;
+    }
+
+    body.senior-mode .container {
+      max-width: min(1320px, 100%);
+      grid-template-columns: minmax(0, 1.5fr) minmax(clamp(300px, 27vw, 370px), 0.58fr);
+      gap: 12px;
+    }
+
+    body.senior-mode .card {
+      padding: 14px;
+    }
+
+    body.senior-mode .app-header {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+    }
+
+    body.senior-mode .app-title {
+      font-size: 20px;
+    }
+
+    body.senior-mode .app-subtitle,
+    body.senior-mode .auth-user,
+    body.senior-mode .current-datetime {
+      font-size: 12px;
+    }
+
+    body.senior-mode .senior-revenue-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: end;
+    }
+
+    body.senior-mode #top3RgpHome,
+    body.senior-mode #seniorManualKpiHome {
+      display: none;
+    }
+
+    body.senior-mode #seniorManualKpiField {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    body.senior-mode #seniorManualKpiField .field-label {
+      margin-bottom: 12px;
+    }
+
+    body.senior-mode #seniorManualKpiField .main-input {
+      width: 100%;
+      min-height: 44px;
+      font-size: 19px;
+      padding: 9px 14px;
+    }
+
+    body.senior-mode #seniorRevenueField .main-input,
+    body.senior-mode #seniorManualKpiField .main-input,
+    body.senior-mode #seniorPersonalDealField .main-input,
+    body.senior-mode #seniorBonusSection .newbie-count-field .main-input {
+      background: var(--white);
+      border-color: rgba(19, 9, 9, 0.28);
+      box-shadow: inset 0 0 0 1px rgba(19, 9, 9, 0.08), 0 6px 14px rgba(19, 9, 9, 0.04);
+    }
+
+    body.senior-mode #seniorBonusSection .bonus-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    body.senior-mode #seniorBonusSection .bonus-row {
+      display: contents;
+    }
+
+    body.senior-mode #seniorPersonalDealField,
+    body.senior-mode #seniorBonusSection .newbie-count-field {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    body.senior-mode #seniorPersonalDealField .field-label,
+    body.senior-mode #seniorBonusSection .newbie-count-field .field-label {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    body.senior-mode #seniorPersonalDealField .main-input,
+    body.senior-mode #seniorBonusSection .newbie-count-field .main-input {
+      width: 100%;
+      min-height: 44px;
+      font-size: 19px;
+      padding: 9px 14px;
+    }
+
+    body.senior-mode #seniorBonusSection .newbie-count-field {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    body.senior-mode #seniorKpiSection .field-label {
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row > div {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row .slider-wrap {
+      height: 100%;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row + .senior-kpi-row {
+      margin-top: 10px;
+    }
+
+    body.senior-mode #seniorKpiSection .field-label[style] {
+      margin-top: 10px !important;
+    }
+
+    body.senior-mode #seniorKpiSection .slider-wrap {
+      padding: 10px;
+    }
+
+    body.senior-mode #seniorKpiSection input[type="range"] {
+      margin: 7px 0;
+    }
+
+    body.senior-mode #seniorKpiSection .range-note {
+      gap: 5px;
+      margin-top: 7px;
+      padding-top: 7px;
+      font-size: 10px;
+    }
+
+    body.senior-mode #seniorKpiSection .range-note span {
+      padding: 5px 7px;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row .range-note {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      white-space: normal;
+      text-align: left;
+    }
+
+    body.senior-mode #seniorKpiSection .senior-kpi-row .range-note span {
+      white-space: normal;
+      line-height: 1.15;
+    }
+
+    body.senior-mode #seniorKpiSection .slider-labels {
+      font-size: 11px;
+    }
+
+    body.senior-mode #seniorKpiSection .slider-labels span[id] {
+      font-size: 13px !important;
+    }
+
+    body.senior-mode .commission-box {
+      padding: 12px;
+    }
+
+    body.senior-mode .readout-container {
+      padding: 10px;
+    }
+
+    body.senior-mode #dynamicRateNumber {
+      font-size: 32px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .auth-card .main-input {
+      margin-bottom: 14px;
+    }
+
+    .auth-card .main-input.hidden {
+      display: none !important;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      background: var(--brand-red);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .primary-btn:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .auth-message {
+      min-height: 20px;
+      margin: 14px 0 0;
+      font-size: 14px;
+      color: var(--brand-red);
+    }
+
+    .auth-user {
+      margin: 0 0 20px;
+      font-size: 14px;
+      color: var(--brand-dark);
+      opacity: 1;
+    }
+
+    .user-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto 40px;
+      justify-content: end;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 0;
+    }
+
+    .user-row .auth-user {
+      margin: 0;
+      padding-right: 0;
+      text-align: right;
+    }
+
+    .user-meta {
+      display: grid;
+      gap: 3px;
+      justify-items: end;
+    }
+
+    .current-datetime {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      opacity: 1;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .time-separator {
+      display: inline-block;
+      animation: blinkTimeSeparator 1s steps(1, end) infinite;
+    }
+
+    @keyframes blinkTimeSeparator {
+      50% { opacity: 0; }
+    }
+
+    .logout-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(252, 64, 58, 0.35);
+      background: rgba(252, 64, 58, 0.06);
+      color: var(--brand-red);
+      border-radius: 10px;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logout-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) and (min-width: 901px) {
+      body.senior-mode .container {
+        grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+      }
+
+      body.senior-mode .senior-revenue-row,
+      body.senior-mode #seniorBonusSection .bonus-grid,
+      body.senior-mode #seniorKpiSection .senior-kpi-row {
+        grid-template-columns: 1fr;
+      }
+
+      body.senior-mode #seniorKpiSection .senior-kpi-row .range-note {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      body.senior-mode .container {
+        max-width: 100%;
+        grid-template-columns: 1fr;
+      }
+      body { padding: 12px; }
+      .card { padding: 18px; }
+      .total-amount { font-size: 36px; }
+      .bonus-grid { grid-template-columns: 1fr; }
+      .bonus-row { grid-template-columns: 1fr; }
+      .under12-top,
+      .under12-metrics,
+      .under12-kpi-row {
+        grid-template-columns: 1fr;
+      }
+      .under12-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .under12-combo-card {
+        display: grid;
+      }
+      .under12-combo-fields {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .under12-per-experienced {
+        grid-column: auto;
+        margin-top: -2px;
+      }
+      .under12-card .main-input {
+        width: 100%;
+      }
+      .under12-kpi-row .under12-card {
+        grid-column: auto;
+      }
+      .newbie-fields { grid-template-columns: 1fr; }
+      .toggle-nav {
+        grid-auto-flow: row;
+        grid-template-columns: 1fr;
+      }
+      .senior-revenue-row {
+        grid-template-columns: 1fr;
+      }
+      .under12-rate-grid {
+        grid-template-columns: 1fr;
+      }
+      body.senior-mode #seniorKpiSection .senior-kpi-row {
+        grid-template-columns: 1fr;
+      }
+      body.senior-mode .senior-revenue-row,
+      body.senior-mode #seniorBonusSection .bonus-grid {
+        grid-template-columns: 1fr;
+      }
+      .result-card {
+        position: static;
+      }
+      .result-card.senior-result {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app-title { font-size: 22px; }
+      body.senior-mode {
+        padding: 8px;
+      }
+      body.senior-mode .card {
+        padding: 14px;
+      }
+      body.senior-mode .result-card.senior-result {
+        padding: 14px;
+      }
+      body.senior-mode .result-card.senior-result .total-amount {
+        font-size: 32px;
+      }
+      .inline-field {
+        grid-template-columns: 1fr;
+      }
+      .inline-field .main-input {
+        max-width: none;
+      }
+      .newbie-list {
+        grid-template-columns: 1fr;
+      }
+      .newbie-list-header {
+        grid-template-columns: 1fr;
+      }
+      .newbie-total-field .main-input {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="card auth-card hidden" id="authScreen">
+    <div class="app-header">
+      <div class="app-brand">
+        <h1 class="app-title"><span>Пульс</span> недвижимости</h1>
+      </div>
+      <p class="app-subtitle">Вход для руководителей</p>
+    </div>
+
+    <form id="authForm">
+      <label class="field-label" for="fioInput">Введите ФИО полностью</label>
+      <input type="text" id="fioInput" class="main-input" placeholder="Фамилия Имя Отчество" autocomplete="name">
+      <input type="text" id="partnerCodeInput" class="main-input hidden" inputmode="numeric" autocomplete="off">
+      <button class="primary-btn" id="authButton" type="submit">Про клжить</button>
+    </form>
+    <p class="auth-message" id="authMessage"></p>
+  </section>
+
+  <div class="container hidden" id="calculatorApp">
+    <main class="card">
+      <div class="app-header">
+        <div class="app-brand">
+          <h1 class="app-title"><span>Пульс</span> недвижимости</h1>
+        </div>
+        <p class="app-subtitle">Панель руководителя: расчет управленческого вознаграждения</p>
+        <div class="user-row">
+          <div class="user-meta">
+            <p class="auth-user" id="authUser"></p>
+            <p class="current-datetime" id="currentDateTime"></p>
+          </div>
+          <button class="logout-btn" id="logoutButton" type="button" aria-label="Выйти" title="Выйти">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 17l5-5-5-5"></path>
+              <path d="M15 12H3"></path>
+              <path d="M21 19V5a2 2 0 0 0-2-2h-6"></path>
+              <path d="M13 21h6a2 2 0 0 0 2-2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <section class="input-group" id="seniorFinancialSection">
+        <label class="field-label hidden">Стаж руководителя</label>
+        <div class="toggle-nav hidden" id="experienceModeGroup">
+          <button class="toggle-btn" type="button" data-value="under12">До 12 мес.</button>
+          <button class="toggle-btn active" type="button" data-value="senior">12+ мес.</button>
+        </div>
+        <p class="mode-note hidden" id="experienceModeNote"></p>
+        <div class="senior-revenue-row" id="seniorRevenueRow">
+          <div id="seniorRevenueField">
+            <label class="field-label">Валовая выручка команды за тек.мес.</label>
+            <div class="input-wrapper">
+              <input type="text" id="teamRevenue" class="main-input" placeholder="10 000 000" inputmode="numeric">
+            </div>
+          </div>
+          <div id="top3RgpHome"></div>
+          <div class="top3-rgp-field" id="top3RgpField">
+            <label class="field-label">Максимальная ставка 6%</label>
+            <div class="rop-score-toggle top3-rgp-toggle" id="top3RgpButtons" role="group" aria-label="ТОП-3 РГП филиала по ВВ">
+              <button class="rop-score-btn" type="button" data-value="1">Да</button>
+              <button class="rop-score-btn active" type="button" data-value="0">Нет</button>
+            </div>
+            <div class="top3-rgp-hint">
+              <span class="hint-caption">Максимальная ставка применяется при двух условиях</span>
+              <span>1. Руководитель в ТОП-3 по ВВ</span>
+              <span>2. ВВ команды больше 4 000 000 ₽</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="input-group hidden" id="under12Section">
+        <div class="under12-panel">
+          <div class="under12-header">
+            <p class="under12-subtitle">Заполните выручку новичков, выручку опытных сотрудников и доплаты. Норматив подтягивается автоматически по текущему месяцу.</p>
+          </div> 
+          <div class="under12-block">
+            <p class="under12-block-title">Расчетная база и доплаты</p>
+            <div class="under12-top">
+              <div class="under12-month">
+                <div>
+                  <label class="field-label" for="under12NormDisplay">Норматив на 1 опытного</label>
+                  <span class="under12-month-label" id="under12MonthLabel"></span>
+                </div>
+                <input type="text" id="under12NormDisplay" class="main-input" readonly tabindex="-1">
+              </div>
+              <div class="under12-metrics">
+                <div class="under12-card">
+                  <label class="field-label" for="under12NewbieRevenue">Выручка партнеров новичков</label>
+                  <input type="text" id="under12NewbieRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                </div>
+                <div class="under12-card under12-combo-card">
+                  <label class="field-label" for="under12ExperiencedRevenue">Выручка опытных 6+</label>
+                  <div class="under12-combo-fields">
+                    <input type="text" id="under12ExperiencedRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric" aria-label="Выручка опытных 6+ мес.">
+                    <div class="under12-combo-small">
+                      <input type="text" id="under12ExperiencedCount" class="main-input" placeholder="чел." inputmode="numeric" aria-label="Количество опытных сотрудников 6+">
+                    </div>
+                    <div class="under12-per-experienced" id="under12ExperiencedPerPerson">Выручка на 1 опытного: <strong>0,00 ₽</strong></div>
+                  </div>
+                </div>
+                <div class="under12-card">
+                  <label class="field-label" for="under12ManualKpiBonus">Функциональный KPI-бонус </label>
+                  <input type="text" id="under12ManualKpiBonus" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                </div>
+                <div class="under12-card">
+                  <label class="field-label" for="under12PersonalDealRevenue">Личная сделка</label>
+                  <input type="text" id="under12PersonalDealRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                </div>
+                <div class="under12-card">
+                  <label class="field-label" for="under12Salary">Оклад </label>
+                  <input type="text" id="under12Salary" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                </div>
+                
+                <div id="under12BonusMount"></div>
+                <div class="under12-card under12-rop-bonus-card">
+                  <label class="field-label">Бонус 0,5%</label>
+                  <div class="rop-score-toggle" id="under12RopScoreButtons" role="group" aria-label="Оценка от РОП">
+                    <button class="rop-score-btn" type="button" data-value="0.5">Да</button>
+                    <button class="rop-score-btn active" type="button" data-value="0">Нет</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="seniorBonusHome"></div>
+      <section class="input-group" id="seniorBonusSection">
+        <h2 class="section-title hidden" id="newbieBonusTitle">Бонус за новичка</h2>
+        <div class="bonus-grid">
+          <div class="bonus-row">
+            <div id="seniorManualKpiHome"></div>
+            <div class="inline-field" id="seniorManualKpiField">
+              <label class="field-label" for="manualKpiBonus">Введите сумму вашего KPI</label>
+              <input type="text" id="manualKpiBonus" class="main-input" placeholder="0 ₽" inputmode="numeric">
+            </div>
+            <div class="inline-field" id="seniorPersonalDealField">
+              <label class="field-label" for="seniorPersonalDealRevenue">Личная сделка</label>
+              <input type="text" id="seniorPersonalDealRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+            </div>
+          </div>
+          <div class="inline-field newbie-count-field">
+            <label class="field-label" for="newbieCount">Количество новичков до 4 мес.</label>
+            <input type="text" id="newbieCount" class="main-input" placeholder="0 чел." inputmode="numeric">
+          </div>
+        </div>
+        <div class="newbie-list-header hidden" id="newbieListHeader">
+          <label class="field-label" id="newbieListLabel">Укажите интегральный и месяц работы. Для неполного месяца добавьте фактически отработанные дни.</label>
+          <div class="newbie-total-field">
+            <label class="field-label" for="newbieBonusInline">Сумма за новичков</label>
+            <input type="text" id="newbieBonusInline" class="main-input" value="0,00 ₽" readonly tabindex="-1">
+          </div>
+        </div>
+        <div class="newbie-list" id="newbieList"></div>
+      </section>
+
+      <section class="input-group" id="seniorKpiSection">
+        <h2 class="section-title">Переменные эффективности (KPI)</h2>
+
+        <div class="senior-kpi-row">
+          <div>
+            <label class="field-label">Выполнение плана продаж</label>
+            <div class="slider-wrap">
+              <div class="slider-labels">
+                <span>0%</span>
+                <span id="planFulfillmentLabel" style="color: var(--brand-red); font-size: 16px;">0%</span>
+                <span>121%</span>
+              </div>
+              <input type="range" id="planFulfillmentSlider" min="0" max="121" step="1" value="0">
+              <div class="range-note">
+                <span>0–79% = 0,3%</span>
+                <span>80–90% = 0,5%</span>
+                <span>91–100% = 0,8%</span>
+                <span>101–120% = 0,9%</span>
+                <span>121% и более = 1%</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label">Доля РДС</label>
+            <div class="slider-wrap">
+              <div class="slider-labels">
+                <span>0%</span>
+                <span id="rdsShareLabel" style="color: var(--brand-red); font-size: 16px;">0%</span>
+                <span>60%</span>
+              </div>
+              <input type="range" id="rdsShareSlider" min="0" max="60" step="1" value="0">
+              <div class="range-note">
+                <span>0–39% = 0,1%</span>
+                <span>40–49% = 0,5%</span>
+                <span>50–59% = 0,8%</span>
+                <span>60% = 1%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="senior-kpi-row">
+          <div>
+            <label class="field-label">Доля РДС загородная недвижимость</label>
+            <div class="slider-wrap">
+              <div class="slider-labels">
+                <span>0%</span>
+                <span id="countryRdsShareLabel" style="color: var(--brand-red); font-size: 16px;">0%</span>
+                <span>21%</span>
+              </div>
+              <input type="range" id="countryRdsShareSlider" min="0" max="21" step="1" value="0">
+              <div class="range-note">
+                <span>0–10% = 0%</span>
+                <span>11–20% = 0,5%</span>
+                <span>21% = 1%</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label">Количество активных сотрудников</label>
+            <div class="slider-wrap">
+              <div class="slider-labels">
+                <span>0 чел.</span>
+                <span id="teamSizeLabel" style="color: var(--brand-red); font-size: 16px;">0 чел.</span>
+                <span>15 чел.</span>
+              </div>
+              <input type="range" id="teamSizeSlider" min="0" max="15" step="1" value="0">
+              <div class="range-note">
+                <span>1–9 чел. = 0,1%</span>
+                <span>10–12 чел. = 0,5%</span>
+                <span>13–14 чел. = 0,8%</span>
+                <span>15 чел. = 1%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="input-group" id="rateSection">
+        <div class="commission-box">
+          <div class="readout-container" id="singleRateReadout">
+            <span class="readout-label">Ваша расчетная ставка</span>
+            <input type="text" id="dynamicRateNumber" class="rate-number" value="2.0%" readonly tabindex="-1">
+          </div>
+          <div class="under12-rate-grid hidden" id="under12RateReadouts">
+            <div class="readout-container">
+              <span class="readout-label">Расчетная ставка от ВВ опытных</span>
+              <input type="text" id="under12ExperiencedRateNumber" class="rate-number" value="2.5%" readonly tabindex="-1">
+            </div>
+            <div class="readout-container">
+              <span class="readout-label">Расчетная ставка от ВВ новичков</span>
+              <input type="text" id="under12NewbieRateNumber" class="rate-number" value="5.0%" readonly tabindex="-1">
+            </div>
+            <div class="readout-container">
+              <span class="readout-label">РАСЧЕТНАЯ СТАВКА ОТ ВВ с Личной сделки</span>
+              <input type="text" id="under12PersonalDealRateNumber" class="rate-number" value="1.0%" readonly tabindex="-1">
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="card result-card" id="resultCard">
+      <div class="total-label">Доход на руки</div>
+      <div class="total-amount" id="totalIncome">—</div>
+      <div class="total-subtitle" id="incomeSubtitle">Введите валовую выручку команды для расчета</div>
+      <button class="reset-btn hidden" id="resetButton" type="button">Сбросить результаты</button>
+
+      <div class="detail-block">
+        <div class="section-title" style="color: var(--brand-grey); opacity: 0.5; margin-bottom: 10px;">Детализация расчетов</div>
+        <div class="detail-row detail-revenue">
+          <div class="detail-label">
+            <span>Общая ВВ команды</span>
+          </div>
+          <strong id="revenuePreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row under12-only-detail detail-under12-newbie-revenue">
+          <span>Выручка партнеров новичков</span>
+          <strong id="under12NewbieRevenuePreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row under12-only-detail detail-under12-experienced-revenue">
+          <span>Выручка опытных 6+</span>
+          <strong id="under12ExperiencedRevenuePreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row under12-only-detail detail-salary">
+          <span>Оклад</span>
+          <strong id="salaryPreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row detail-kpi">
+          <span>KPI-бонус</span>
+          <strong id="manualKpiBonusPreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row detail-newbie-bonus">
+          <span>Бонус за новичков</span>
+          <strong id="newbieBonusPreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row detail-personal-deal">
+          <span>Личная сделка</span>
+          <strong id="personalDealBonusPreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row detail-gross">
+          <div class="detail-label">
+            <span>Начислено до налога</span>
+          </div>
+          <strong id="grossBonusPreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row detail-tax">
+          <span id="taxLabel">Налог 6%</span>
+          <strong id="taxValuePreview">0,00 ₽</strong>
+        </div>
+        <div class="detail-row accent detail-final">
+          <div class="detail-label">
+            <span>Итого к выплате</span>
+            <span class="detail-subnote" style="font-size: 11px; color: var(--brand-red); margin-top: 4px;">После налога и с учетом бонуса</span>
+          </div>
+          <strong id="finalRatePreview">0,00 ₽</strong>
+        </div>
+        <p class="payout-disclaimer detail-disclaimer">Итоговая сумма носит предварительный характер и может незначительно отличаться после финальной проверки.</p>
+      </div>
+
+      <div class="side-instruction">
+        <h2 class="side-instruction-title">Инструкция</h2>
+        <ol id="seniorInstructionList">
+          <li>Введите сумму валовой выручки.</li>
+          <li>Выберите количество ваших новичков до 4 мес. стажа, в появившемся поле ниже укажите их интегральный показатель и количество фактически отработанных дней.</li>
+          <li>Выберите процент выполнения плана по валовой выручке.</li>
+          <li>Выберите процент риелторов, делающих сделки: общие.</li>
+          <li>Выберите процент риелторов, делающих сделки: загородная недвижимость.</li>
+          <li>Выберите количество активных сотрудников.</li>
+        </ol>
+        <ol class="hidden" id="under12InstructionList">
+          <li>Введите сумму выручки ваших новичков.</li>
+          <li>Введите сумму выручки ваших опытных риелторов и количество таковых. При отсутствии опытных риелторов пункт 2 пропускаем.</li>
+          <li>Введите функциональный KPI из вашей мотивации в Google таблице.</li>
+          <li>Введите количество ваших новичков до 4 мес. стажа, в появившемся поле ниже укажите их интегральный показатель и количество фактически отработанных дней.</li>
+        </ol>
+        <ul class="side-rules">
+          <li>Группа 0 в расчете мотивации не участвует.</li>
+          <li>Риэлторы, находившиеся в отчетном месяце в отпуске 14 и более дней, исключаются из расчета мотивации.</li>
+        </ul>
+      </div>
+      <div class="side-top3-mount hidden" id="sideTop3Mount"></div>
+      <div class="side-under12-bonus-mount hidden" id="sideUnder12BonusMount"></div>
+      <div class="side-rate-mount hidden" id="sideRateMount"></div>
+    </aside>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const AUTH_GAS_URL = window.PULSE_CONFIG?.AUTH_GAS_URL || '';
+
+    const auth = {
+      screen: document.getElementById('authScreen'),
+      app: document.getElementById('calculatorApp'),
+      form: document.getElementById('authForm'),
+      fioInput: document.getElementById('fioInput'),
+      partnerCodeInput: document.getElementById('partnerCodeInput'),
+      button: document.getElementById('authButton'),
+      message: document.getElementById('authMessage'),
+      user: document.getElementById('authUser'),
+      currentDateTime: document.getElementById('currentDateTime'),
+      logoutButton: document.getElementById('logoutButton')
+    };
+
+    const challengeTypes = [
+      { key: 'first4', prompt: 'Введите первые 4 цифры вашего кода партнера', length: 4 },
+      { key: 'last4', prompt: 'Введите последние 4 цифры вашего кода партнера', length: 4 },
+      { key: 'first3', prompt: 'Введите первые 3 цифры вашего кода партнера', length: 3 },
+      { key: 'last3', prompt: 'Введите последние 3 цифры вашего кода партнера', length: 3 },
+      { key: 'first2', prompt: 'Введите первые 2 цифры вашего кода партнера', length: 2 },
+      { key: 'last2', prompt: 'Введите последние 2 цифры вашего кода партнера', length: 2 },
+    ];
+    const currentChallenge = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+    let authStep = 1;
+    const AUTH_SESSION_KEY = 'mng_auth_session_v1';
+    const AUTH_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+    const MOTIVATION_RULES = JSON.parse(atob('eyJwZXJjZW50U2NhbGUiOjEwMCwidGF4UmF0ZSI6MC4wNiwiYmFzZVJhdGUiOjIuMCwibWF4UmF0ZSI6Ni4wLCJwZXJzb25hbERlYWxSYXRlIjoxLjAsInVuZGVyMTIiOnsibmV3YmllUmF0ZSI6NS4wLCJwZXJzb25hbERlYWxSYXRlIjoxLjAsInJhdGVNdWx0aXBsaWVyIjo0LCJtaW5SYXRlIjoyLjUsIm1heFJhdGUiOjUuMCwicm9wTWF4U2NvcmUiOjAuNSwibm9ybXMiOnsiamFuIjp7ImJhc2UiOjg2NDUwLCJtYXgiOjEwNTAwMH0sImZlYiI6eyJiYXNlIjoxNDEwNTUsIm1heCI6MTc2MzE5fSwibWFyIjp7ImJhc2UiOjIxMTU4MywibWF4IjoyNjQ0Nzl9LCJhcHIiOnsiYmFzZSI6MjIxNzIyLCJtYXgiOjI3NzE1M30sIm1heSI6eyJiYXNlIjoxODQxMDgsIm1heCI6MjMwMTM1fSwianVuIjp7ImJhc2UiOjIwMjY5NCwibWF4IjoyNTMzNjh9LCJqdWwiOnsiYmFzZSI6MjE5OTQ1LCJtYXgiOjI3NDkzMX0sImF1ZyI6eyJiYXNlIjoyMzAwMDgsIm1heCI6Mjg3NTEwfSwic2VwIjp7ImJhc2UiOjI1MzEzMCwibWF4IjozMTY0MTN9LCJvY3QiOnsiYmFzZSI6MzI3NTgwLCJtYXgiOjQwOTQ3NX0sIm5vdiI6eyJiYXNlIjozMjc1ODAsIm1heCI6NDA5NDc1fSwiZGVjIjp7ImJhc2UiOjM2NDgwNSwibWF4Ijo0NTYwMDZ9fX0sIm5ld2JpZSI6eyJmdWxsV29ya0RheXMiOjIyLCJtYXhCb251cyI6NDAwMCwia3BpQmFzZSI6ODB9LCJzZW5pb3IiOnsidGVhbVNpemUiOltbMTUsMS4wXSxbMTMsMC44XSxbMTAsMC41XSxbMSwwLjFdXSwicGxhbkZ1bGZpbGxtZW50IjpbWzEyMSwxLjBdLFsxMDEsMC45XSxbOTEsMC44XSxbODAsMC41XSxbMSwwLjNdXSwicmRzU2hhcmUiOltbNjAsMS4wXSxbNTAsMC44XSxbNDAsMC41XSxbMSwwLjFdXSwiY291bnRyeVJkc1NoYXJlIjpbWzIxLDEuMF0sWzExLDAuNV1dfX0='));
+    const SENIOR_BASE_RATE = MOTIVATION_RULES.baseRate;
+    const LOG_MAX_ATTEMPTS = 3;
+    const LOG_RETRY_DELAY_MS = 1500;
+
+    const state = {
+      experienceMode: 'senior',
+      canSwitchExperienceMode: false,
+      teamRevenue: 0,
+      under12Month: getCurrentMonthKey(),
+      under12NewbieRevenue: 0,
+      under12ExperiencedRevenue: 0,
+      under12ExperiencedCount: 0,
+      under12RopScore: 0,
+      under12Salary: 0,
+      under12PersonalDealRevenue: 0,
+      seniorPersonalDealRevenue: 0,
+      planFulfillment: 0,
+      rdsShare: 0,
+      countryRdsShare: 0,
+      teamSize: 0,
+      isTop3Rgp: false,
+      seniorNewbieCount: 0,
+      seniorNewbies: [],
+      under12NewbieCount: 0,
+      under12Newbies: [],
+      seniorManualKpiBonus: 0,
+      under12ManualKpiBonus: 0,
+      currentRate: SENIOR_BASE_RATE,
+      displayedIncome: 0,
+      displayedRevenue: 0,
+      displayedUnder12NewbieRevenueIncome: 0,
+      displayedUnder12ExperiencedRevenueIncome: 0,
+      displayedGrossBonus: 0,
+      displayedTax: 0,
+      displayedNewbieBonus: 0,
+      displayedManualKpiBonus: 0,
+      displayedSalaryBonus: 0,
+      displayedPersonalDealBonus: 0,
+      displayedFinalIncome: 0
+    };
+
+    const under12Norms = MOTIVATION_RULES.under12.norms;
+
+    function callAuthApi(payload) {
+      return new Promise((resolve, reject) => {
+        if (!AUTH_GAS_URL) {
+          reject(new Error('Не настроена ссылка авторизации'));
+          return;
+        }
+
+        const callbackName = 'mngAuthCallback' + Date.now() + Math.floor(Math.random() * 1000);
+        const script = document.createElement('script');
+        const params = new URLSearchParams(payload);
+        let timeoutId;
+
+        params.set('callback', callbackName);
+
+        window[callbackName] = (data) => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          script.remove();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Ошибка подключения'));
+        };
+
+        timeoutId = setTimeout(() => {
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Превышено время ожидания'));
+        }, 12000);
+
+        script.src = AUTH_GAS_URL + '?' + params.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function updateCurrentDateTime() {
+      const now = new Date();
+      const date = new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).format(now);
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      auth.currentDateTime.innerHTML = `${date} время ${hours}<span class="time-separator">:</span>${minutes}`;
+    }
+
+    function logCalculatorOpen(fio, attempt = 1) {
+      if (!fio) return;
+
+      callAuthApi({
+        action: 'logCalculator',
+        fio: fio,
+        calculatorType: 'Калькулятор РГП'
+      }).then((result) => {
+        if (!result || !result.ok) {
+          throw new Error(result?.error || 'GAS не подтвердил запись лога');
+        }
+      }).catch((error) => {
+        if (attempt < LOG_MAX_ATTEMPTS) {
+          window.setTimeout(() => logCalculatorOpen(fio, attempt + 1), LOG_RETRY_DELAY_MS);
+          return;
+        }
+
+        console.warn('Лог открытия калькулятора не записан:', error.message);
+      });
+    }
+
+    function showCalculator(manager) {
+      auth.screen.classList.add('hidden');
+      auth.app.classList.remove('hidden');
+      const fio = manager.fio || auth.fioInput.value.trim();
+      const title = getUserTitle(manager, fio);
+      state.canSwitchExperienceMode = canSwitchExperienceMode(manager);
+      auth.user.textContent = title ? `${title}: ${fio}` : fio;
+      updateCurrentDateTime();
+      logCalculatorOpen(fio);
+      applyExperienceMode(getExperienceModeFromUser(manager));
+      setRangeFill(inputs.teamSizeSlider, state.teamSize);
+      updateUI(true);
+    }
+
+    function getExperienceModeFromUser(manager) {
+      const tenureMonths = Number(manager.tenureMonths);
+      return tenureMonths >= 0 && tenureMonths < 13 ? 'under12' : 'senior';
+    }
+
+    function canSwitchExperienceMode(manager) {
+      return manager && (manager.role === 'РОП' || isRdpRole(manager.role) || isDirectorRole(manager.role));
+    }
+
+    function hasTenureMonths(user) {
+      return user && user.tenureMonths !== undefined && user.tenureMonths !== null && user.tenureMonths !== '';
+    }
+
+    function isValidFio(fio) {
+      return /^[A-Za-zА-Яа-яЁё]+(?:[ -][A-Za-zА-Яа-яЁё]+)*$/.test(fio);
+    }
+
+    function applyExperienceMode(mode) {
+      state.experienceMode = mode;
+      const isUnder12 = mode === 'under12';
+
+      inputs.experienceModeGroup.querySelectorAll('.toggle-btn').forEach((button) => {
+        button.classList.toggle('active', button.dataset.value === mode);
+      });
+      inputs.experienceModeGroup.classList.toggle('hidden', !state.canSwitchExperienceMode);
+      inputs.experienceModeNote.classList.add('hidden');
+      inputs.under12Section.classList.toggle('hidden', !isUnder12);
+      inputs.seniorFinancialSection.classList.toggle('hidden', isUnder12 && !state.canSwitchExperienceMode);
+      inputs.seniorRevenueRow.classList.toggle('hidden', isUnder12);
+      inputs.seniorBonusSection.classList.remove('hidden');
+      inputs.seniorManualKpiField.classList.toggle('hidden', isUnder12);
+      inputs.seniorPersonalDealField.classList.toggle('hidden', isUnder12);
+      inputs.seniorKpiSection.classList.toggle('hidden', isUnder12);
+      inputs.seniorRevenueField.classList.toggle('hidden', isUnder12);
+      inputs.singleRateReadout.classList.toggle('hidden', isUnder12);
+      inputs.under12RateReadouts.classList.toggle('hidden', !isUnder12);
+      inputs.newbieBonusTitle.classList.add('hidden');
+      inputs.seniorInstructionList.classList.toggle('hidden', isUnder12);
+      inputs.under12InstructionList.classList.toggle('hidden', !isUnder12);
+      inputs.under12OnlyDetails.forEach((row) => row.classList.toggle('hidden', !isUnder12));
+      document.body.classList.toggle('senior-mode', !isUnder12);
+      document.body.classList.toggle('under12-mode', isUnder12);
+      inputs.resultCard.classList.toggle('senior-result', !isUnder12);
+      inputs.resultCard.classList.toggle('under12-result', isUnder12);
+      inputs.sideRateMount.classList.add('hidden');
+      inputs.sideTop3Mount.classList.toggle('hidden', isUnder12);
+      inputs.sideUnder12BonusMount.classList.toggle('hidden', !isUnder12);
+      inputs.rateSection.classList.remove('hidden');
+
+      if (isUnder12) {
+        inputs.under12BonusMount.appendChild(inputs.seniorBonusSection);
+        inputs.sideUnder12BonusMount.appendChild(inputs.under12RopBonusCard);
+        inputs.seniorManualKpiHome.after(inputs.seniorManualKpiField);
+        inputs.top3RgpHome.after(inputs.top3RgpField);
+        inputs.rateSection.querySelector('.commission-box').prepend(inputs.singleRateReadout);
+      } else {
+        inputs.under12BonusMount.after(inputs.under12RopBonusCard);
+        inputs.seniorRevenueRow.appendChild(inputs.seniorManualKpiField);
+        inputs.seniorBonusHome.after(inputs.seniorBonusSection);
+        inputs.sideTop3Mount.appendChild(inputs.top3RgpField);
+        inputs.rateSection.querySelector('.commission-box').prepend(inputs.singleRateReadout);
+      }
+
+      inputs.experienceModeNote.textContent = '';
+      updateUnder12NormDisplay();
+      syncActiveModeInputs();
+    }
+
+    function saveAuthSession(manager) {
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+        user: manager,
+        expiresAt: Date.now() + AUTH_SESSION_TTL_MS
+      }));
+    }
+
+    function clearAuthSession() {
+      localStorage.removeItem(AUTH_SESSION_KEY);
+    }
+
+    function restoreAuthSession() {
+      try {
+        const savedSession = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
+
+        if (!savedSession || !savedSession.user || !hasTenureMonths(savedSession.user) || Date.now() > savedSession.expiresAt) {
+          clearAuthSession();
+          window.location.href = 'login.html';
+          return;
+        }
+
+        showCalculator(savedSession.user);
+      } catch (error) {
+        clearAuthSession();
+        window.location.href = 'login.html';
+      }
+    }
+
+    function isDirectorRole(role) {
+      return normalizeText(role) === normalizeText('директор');
+    }
+
+    function isRdpRole(role) {
+      return normalizeText(role) === normalizeText('РДП');
+    }
+
+    function getUserTitle(manager) {
+      if (isDirectorRole(manager.role)) return 'Директор';
+      if (isRdpRole(manager.role)) return 'РДП';
+      return manager.role;
+    }
+
+    function normalizeText(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/\s+/g, ' ');
+    }
+
+    function logout() {
+      clearAuthSession();
+      window.location.href = 'login.html';
+    }
+
+    function resetAuthAndReload() {
+      clearAuthSession();
+      authStep = 1;
+      auth.form.reset();
+      auth.fioInput.readOnly = false;
+      auth.partnerCodeInput.classList.add('hidden');
+      auth.partnerCodeInput.value = '';
+      auth.message.textContent = '';
+      auth.button.disabled = false;
+      auth.button.textContent = 'Продолжить';
+      window.location.reload();
+    }
+
+    async function checkAccess(e) {
+      e.preventDefault();
+
+      const fio = auth.fioInput.value.trim();
+
+      if (!fio) {
+        auth.message.textContent = 'Введите ФИО полностью.';
+        return;
+      }
+
+      if (!isValidFio(fio)) {
+        auth.message.textContent = 'ФИО должно содержать только буквы, пробелы и дефис.';
+        return;
+      }
+
+      if (authStep === 1) {
+        authStep = 2;
+        auth.fioInput.readOnly = true;
+        auth.partnerCodeInput.classList.remove('hidden');
+        auth.partnerCodeInput.placeholder = currentChallenge.prompt;
+        auth.partnerCodeInput.maxLength = String(currentChallenge.length);
+        auth.button.textContent = 'Подтвердить вход';
+        auth.message.textContent = '';
+        auth.partnerCodeInput.focus();
+        return;
+      }
+
+      const answer = auth.partnerCodeInput.value.trim();
+
+      if (answer.length !== currentChallenge.length) {
+        auth.message.textContent = 'Введите ' + currentChallenge.length + ' цифры кода партнера.';
+        return;
+      }
+
+      auth.button.disabled = true;
+      auth.button.textContent = 'Проверяем...';
+      auth.message.textContent = 'Проверяем данные...';
+
+      try {
+        const result = await callAuthApi({
+          action: 'auth',
+          fio: fio,
+          challengeType: currentChallenge.key,
+          answer: answer
+        });
+
+        if (!result.ok) {
+          if (result.error === 'Найдено несколько совпадений. Начните вход заново') {
+            resetAuthAndReload();
+            return;
+          }
+
+          auth.message.textContent = result.error || 'Данные указаны неверно.';
+          return;
+        }
+
+        if (!hasTenureMonths(result.user)) {
+          auth.message.textContent = 'Вход найден, но GAS не передал стаж из столбца E. Обновите деплой GAS.';
+          return;
+        }
+
+        saveAuthSession(result.user);
+        showCalculator(result.user);
+      } catch (error) {
+        auth.message.textContent = 'Не удалось проверить данные. Попробуйте позже.';
+      } finally {
+        auth.button.disabled = false;
+        auth.button.textContent = 'Подтвердить вход';
+      }
+    }
+
+    const inputs = {
+      revenue: document.getElementById('teamRevenue'),
+      seniorFinancialSection: document.getElementById('seniorFinancialSection'),
+      seniorRevenueRow: document.getElementById('seniorRevenueRow'),
+      seniorRevenueField: document.getElementById('seniorRevenueField'),
+      experienceModeGroup: document.getElementById('experienceModeGroup'),
+      experienceModeNote: document.getElementById('experienceModeNote'),
+      under12Section: document.getElementById('under12Section'),
+      under12BonusMount: document.getElementById('under12BonusMount'),
+      seniorBonusHome: document.getElementById('seniorBonusHome'),
+      seniorBonusSection: document.getElementById('seniorBonusSection'),
+      newbieBonusTitle: document.getElementById('newbieBonusTitle'),
+      seniorManualKpiHome: document.getElementById('seniorManualKpiHome'),
+      seniorManualKpiField: document.getElementById('seniorManualKpiField'),
+      seniorPersonalDealField: document.getElementById('seniorPersonalDealField'),
+      seniorPersonalDealRevenue: document.getElementById('seniorPersonalDealRevenue'),
+      seniorKpiSection: document.getElementById('seniorKpiSection'),
+      seniorInstructionList: document.getElementById('seniorInstructionList'),
+      under12InstructionList: document.getElementById('under12InstructionList'),
+      under12NormDisplay: document.getElementById('under12NormDisplay'),
+      under12MonthLabel: document.getElementById('under12MonthLabel'),
+      under12NewbieRevenue: document.getElementById('under12NewbieRevenue'),
+      under12ExperiencedRevenue: document.getElementById('under12ExperiencedRevenue'),
+      under12ExperiencedCount: document.getElementById('under12ExperiencedCount'),
+      under12ExperiencedPerPerson: document.getElementById('under12ExperiencedPerPerson'),
+      under12RopBonusCard: document.querySelector('.under12-rop-bonus-card'),
+      under12RopScoreButtons: document.getElementById('under12RopScoreButtons'),
+      under12ManualKpiBonus: document.getElementById('under12ManualKpiBonus'),
+      under12PersonalDealRevenue: document.getElementById('under12PersonalDealRevenue'),
+      under12Salary: document.getElementById('under12Salary'),
+      top3RgpHome: document.getElementById('top3RgpHome'),
+      top3RgpField: document.getElementById('top3RgpField'),
+      top3RgpButtons: document.getElementById('top3RgpButtons'),
+      planFulfillmentSlider: document.getElementById('planFulfillmentSlider'),
+      planFulfillmentLabel: document.getElementById('planFulfillmentLabel'),
+      rdsShareSlider: document.getElementById('rdsShareSlider'),
+      rdsShareLabel: document.getElementById('rdsShareLabel'),
+      countryRdsShareSlider: document.getElementById('countryRdsShareSlider'),
+      countryRdsShareLabel: document.getElementById('countryRdsShareLabel'),
+      teamSizeSlider: document.getElementById('teamSizeSlider'),
+      teamSizeLabel: document.getElementById('teamSizeLabel'),
+      newbieCount: document.getElementById('newbieCount'),
+      manualKpiBonus: document.getElementById('manualKpiBonus'),
+      newbieListHeader: document.getElementById('newbieListHeader'),
+      newbieListLabel: document.getElementById('newbieListLabel'),
+      newbieList: document.getElementById('newbieList'),
+      rateSection: document.getElementById('rateSection'),
+      sideTop3Mount: document.getElementById('sideTop3Mount'),
+      sideUnder12BonusMount: document.getElementById('sideUnder12BonusMount'),
+      sideRateMount: document.getElementById('sideRateMount'),
+      singleRateReadout: document.getElementById('singleRateReadout'),
+      under12RateReadouts: document.getElementById('under12RateReadouts'),
+      under12OnlyDetails: document.querySelectorAll('.under12-only-detail'),
+      resultCard: document.getElementById('resultCard'),
+      resetButton: document.getElementById('resetButton')
+    };
+
+    const outputs = {
+      rateNumber: document.getElementById('dynamicRateNumber'),
+      under12ExperiencedRateNumber: document.getElementById('under12ExperiencedRateNumber'),
+      under12NewbieRateNumber: document.getElementById('under12NewbieRateNumber'),
+      under12PersonalDealRateNumber: document.getElementById('under12PersonalDealRateNumber'),
+      totalIncome: document.getElementById('totalIncome'),
+      incomeSubtitle: document.getElementById('incomeSubtitle'),
+      revenuePreview: document.getElementById('revenuePreview'),
+      under12NewbieRevenuePreview: document.getElementById('under12NewbieRevenuePreview'),
+      under12ExperiencedRevenuePreview: document.getElementById('under12ExperiencedRevenuePreview'),
+      grossBonusPreview: document.getElementById('grossBonusPreview'),
+      taxValuePreview: document.getElementById('taxValuePreview'),
+      salaryPreview: document.getElementById('salaryPreview'),
+      personalDealBonusPreview: document.getElementById('personalDealBonusPreview'),
+      newbieBonusInline: document.getElementById('newbieBonusInline'),
+      newbieBonusPreview: document.getElementById('newbieBonusPreview'),
+      manualKpiBonusPreview: document.getElementById('manualKpiBonusPreview'),
+      finalRatePreview: document.getElementById('finalRatePreview')
+    };
+
+    const animationFrames = {};
+
+    function formatNum(v) { 
+      return new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v); 
+    }
+
+    function formatWholeRub(v) {
+      return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(v) + ' ₽';
+    }
+
+    function parseNum(v) { 
+      return parseFloat(String(v).replace(/\s+/g, '').replace(',', '.')) || 0; 
+    }
+
+    function formatNumberInput(input, suffix = '') {
+      const oldCursor = input.selectionStart || 0;
+      const digitsBeforeCursor = input.value.slice(0, oldCursor).replace(/\D/g, '').length;
+      const digits = input.value.replace(/\D/g, '');
+
+      input.value = digits ? new Intl.NumberFormat('ru-RU').format(Number(digits)) + suffix : '';
+
+      let seenDigits = 0;
+      let newCursor = input.value.length;
+
+      for (let i = 0; i < input.value.length; i++) {
+        if (/\d/.test(input.value[i])) {
+          seenDigits++;
+        }
+
+        if (seenDigits >= digitsBeforeCursor) {
+          newCursor = i + 1;
+          break;
+        }
+      }
+
+      input.setSelectionRange(newCursor, newCursor);
+    }
+
+    function formatPercentInput(input, value, keepCursorBeforePercent = false) {
+      input.value = value === 0 ? '' : String(value) + '%';
+
+      if (keepCursorBeforePercent && input.value) {
+        const cursorPosition = input.value.length - 1;
+        input.setSelectionRange(cursorPosition, cursorPosition);
+      }
+    }
+
+    function getCurrentMonthKey() {
+      return ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'][new Date().getMonth()];
+    }
+
+    function getCurrentMonthLabel() {
+      const monthNames = [
+        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+      ];
+      const now = new Date();
+      return monthNames[now.getMonth()] + ' ' + now.getFullYear();
+    }
+
+    function updateUnder12NormDisplay() {
+      const norm = under12Norms[state.under12Month];
+      inputs.under12NormDisplay.value = norm ? formatWholeRub(norm.base) : '';
+      inputs.under12MonthLabel.textContent = getCurrentMonthLabel();
+    }
+
+    function formatRubInputValue(value) {
+      return value > 0 ? new Intl.NumberFormat('ru-RU').format(Math.floor(value)) + ' ₽' : '';
+    }
+
+    function getActiveNewbies() {
+      return state.experienceMode === 'under12' ? state.under12Newbies : state.seniorNewbies;
+    }
+
+    function setActiveNewbies(newbies) {
+      if (state.experienceMode === 'under12') {
+        state.under12Newbies = newbies;
+      } else {
+        state.seniorNewbies = newbies;
+      }
+    }
+
+    function getActiveNewbieCount() {
+      return state.experienceMode === 'under12' ? state.under12NewbieCount : state.seniorNewbieCount;
+    }
+
+    function setActiveNewbieCount(count) {
+      if (state.experienceMode === 'under12') {
+        state.under12NewbieCount = count;
+      } else {
+        state.seniorNewbieCount = count;
+      }
+    }
+
+    function syncActiveModeInputs() {
+      inputs.manualKpiBonus.value = formatRubInputValue(state.seniorManualKpiBonus);
+      inputs.under12ManualKpiBonus.value = formatRubInputValue(state.under12ManualKpiBonus);
+      inputs.newbieCount.value = getActiveNewbieCount() > 0
+        ? new Intl.NumberFormat('ru-RU').format(getActiveNewbieCount())
+        : '';
+      updateRopScoreButtons();
+      updateTop3RgpButtons();
+      renderNewbieFields();
+    }
+
+    function resetCalculator() {
+      state.teamRevenue = 0;
+      state.under12Month = getCurrentMonthKey();
+      state.under12NewbieRevenue = 0;
+      state.under12ExperiencedRevenue = 0;
+      state.under12ExperiencedCount = 0;
+      state.under12RopScore = 0;
+      state.under12Salary = 0;
+      state.under12PersonalDealRevenue = 0;
+      state.seniorPersonalDealRevenue = 0;
+      state.planFulfillment = 0;
+      state.rdsShare = 0;
+      state.countryRdsShare = 0;
+      state.teamSize = 0;
+      state.isTop3Rgp = false;
+      state.seniorNewbieCount = 0;
+      state.seniorNewbies = [];
+      state.under12NewbieCount = 0;
+      state.under12Newbies = [];
+      state.seniorManualKpiBonus = 0;
+      state.under12ManualKpiBonus = 0;
+      state.displayedIncome = 0;
+      state.displayedRevenue = 0;
+      state.displayedUnder12NewbieRevenueIncome = 0;
+      state.displayedUnder12ExperiencedRevenueIncome = 0;
+      state.displayedGrossBonus = 0;
+      state.displayedTax = 0;
+      state.displayedNewbieBonus = 0;
+      state.displayedManualKpiBonus = 0;
+      state.displayedSalaryBonus = 0;
+      state.displayedPersonalDealBonus = 0;
+      state.displayedFinalIncome = 0;
+
+      inputs.revenue.value = '';
+      inputs.under12NewbieRevenue.value = '';
+      inputs.under12ExperiencedRevenue.value = '';
+      inputs.under12ExperiencedCount.value = '';
+      inputs.under12ManualKpiBonus.value = '';
+      inputs.under12PersonalDealRevenue.value = '';
+      inputs.under12Salary.value = '';
+      inputs.seniorPersonalDealRevenue.value = '';
+      inputs.manualKpiBonus.value = '';
+      inputs.newbieCount.value = '';
+
+      inputs.planFulfillmentSlider.value = '0';
+      inputs.rdsShareSlider.value = '0';
+      inputs.countryRdsShareSlider.value = '0';
+      inputs.teamSizeSlider.value = '0';
+      inputs.planFulfillmentLabel.textContent = '0%';
+      inputs.rdsShareLabel.textContent = '0%';
+      inputs.countryRdsShareLabel.textContent = '0%';
+      inputs.teamSizeLabel.textContent = '0 чел.';
+      updateTop3RgpButtons();
+      updateRopScoreButtons();
+
+      setRangeFill(inputs.planFulfillmentSlider, state.planFulfillment);
+      setRangeFill(inputs.rdsShareSlider, state.rdsShare);
+      setRangeFill(inputs.countryRdsShareSlider, state.countryRdsShare);
+      setRangeFill(inputs.teamSizeSlider, state.teamSize);
+      updateUnder12NormDisplay();
+      syncActiveModeInputs();
+      updateUI(true);
+    }
+
+    function hasCalculatorValues() {
+      return state.teamRevenue > 0 ||
+        state.under12NewbieRevenue > 0 ||
+        state.under12ExperiencedRevenue > 0 ||
+        state.under12ExperiencedCount > 0 ||
+        state.under12RopScore > 0 ||
+        state.under12Salary > 0 ||
+        state.under12PersonalDealRevenue > 0 ||
+        state.seniorPersonalDealRevenue > 0 ||
+        state.planFulfillment > 0 ||
+        state.rdsShare > 0 ||
+        state.countryRdsShare > 0 ||
+        state.teamSize > 0 ||
+        state.isTop3Rgp ||
+        state.seniorNewbieCount > 0 ||
+        state.under12NewbieCount > 0 ||
+        state.seniorManualKpiBonus > 0 ||
+        state.under12ManualKpiBonus > 0;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getTierBonus(value, tiers) {
+      const tier = tiers.find(([minValue]) => value >= minValue);
+      return tier ? tier[1] : 0;
+    }
+
+    function updateRopScoreButtons() {
+      inputs.under12RopScoreButtons.querySelectorAll('.rop-score-btn').forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.value) === state.under12RopScore);
+      });
+    }
+
+    function updateTop3RgpButtons() {
+      inputs.top3RgpButtons.querySelectorAll('.rop-score-btn').forEach((button) => {
+        button.classList.toggle('active', Boolean(Number(button.dataset.value)) === state.isTop3Rgp);
+      });
+    }
+
+    const NEWBIE_FULL_WORK_DAYS = MOTIVATION_RULES.newbie.fullWorkDays;
+
+    function calculateNewbieBonus() {
+      return getActiveNewbies().reduce((total, newbie) => {
+        const integralKpi = Math.max(0, newbie.kpi);
+        const daysRatio = newbie.firstMonth
+          ? clamp(newbie.days, 0, NEWBIE_FULL_WORK_DAYS) / NEWBIE_FULL_WORK_DAYS
+          : 1;
+        const bonus = Math.min(
+          MOTIVATION_RULES.newbie.maxBonus,
+          MOTIVATION_RULES.newbie.maxBonus * (integralKpi / MOTIVATION_RULES.newbie.kpiBase)
+        );
+
+        return total + (bonus * daysRatio);
+      }, 0);
+    }
+
+    function renderNewbieFields() {
+      inputs.newbieList.innerHTML = '';
+      const newbies = getActiveNewbies();
+      inputs.newbieListHeader.classList.toggle('hidden', newbies.length === 0);
+
+      newbies.forEach((newbie, index) => {
+        const card = document.createElement('details');
+        const summary = document.createElement('summary');
+        const summaryText = document.createElement('span');
+        const title = document.createElement('span');
+        const meta = document.createElement('span');
+        const body = document.createElement('div');
+        const fields = document.createElement('div');
+        const kpiInput = document.createElement('input');
+        const firstMonthButton = document.createElement('button');
+        const daysInput = document.createElement('input');
+
+        const addControl = (labelText, control, options = {}) => {
+          const wrap = document.createElement('div');
+          const controlLabel = document.createElement('span');
+
+          wrap.className = 'newbie-control';
+          controlLabel.className = 'newbie-control-label';
+          controlLabel.textContent = labelText;
+          wrap.appendChild(controlLabel);
+          wrap.appendChild(control);
+
+          return wrap;
+        };
+
+        card.className = 'newbie-card';
+        card.open = true;
+        summary.className = 'newbie-card-summary';
+        summaryText.className = 'newbie-card-summary-text';
+        title.className = 'newbie-card-title';
+        meta.className = 'newbie-card-meta';
+        body.className = 'newbie-card-body';
+
+        title.textContent = `Новичок №${index + 1}`;
+        const updateCardMeta = () => {
+          const activeNewbies = getActiveNewbies();
+          meta.textContent = `${activeNewbies[index].firstMonth ? 'Неполный месяц' : 'Полный месяц'} • ${activeNewbies[index].kpi ? `Интегральный ${activeNewbies[index].kpi}%` : 'Интегральный не указан'}`;
+        };
+
+        updateCardMeta();
+        summaryText.appendChild(title);
+        summaryText.appendChild(meta);
+        summary.appendChild(summaryText);
+
+        fields.className = `newbie-fields ${newbie.firstMonth ? 'has-days' : 'no-days'}`;
+
+        kpiInput.type = 'text';
+        kpiInput.id = `newbieKpi${index}`;
+        kpiInput.className = 'main-input';
+        kpiInput.inputMode = 'numeric';
+        kpiInput.placeholder = '80%';
+        formatPercentInput(kpiInput, newbie.kpi);
+
+        firstMonthButton.type = 'button';
+        firstMonthButton.className = 'newbie-month-toggle';
+        firstMonthButton.classList.toggle('active', Boolean(newbie.firstMonth));
+        firstMonthButton.textContent = newbie.firstMonth ? 'Неполный месяц' : 'Полный месяц';
+
+        daysInput.type = 'text';
+        daysInput.id = `newbieDays${index}`;
+        daysInput.className = 'main-input';
+        daysInput.inputMode = 'numeric';
+        daysInput.placeholder = '0 дн.';
+        daysInput.value = newbie.days ? String(newbie.days) : '';
+
+        kpiInput.addEventListener('input', (e) => {
+          const kpiValue = Number(e.target.value.replace(/\D/g, '')) || 0;
+          getActiveNewbies()[index].kpi = kpiValue;
+          formatPercentInput(e.target, kpiValue, true);
+          updateCardMeta();
+          updateUI();
+        });
+
+        firstMonthButton.addEventListener('click', () => {
+          getActiveNewbies()[index].firstMonth = !getActiveNewbies()[index].firstMonth;
+          renderNewbieFields();
+          updateUI();
+        });
+
+        daysInput.addEventListener('input', (e) => {
+          const daysValue = clamp(parseNum(e.target.value), 0, NEWBIE_FULL_WORK_DAYS);
+          getActiveNewbies()[index].days = daysValue;
+          e.target.value = daysValue === 0 ? '' : String(daysValue);
+          updateUI();
+        });
+
+        fields.appendChild(addControl('Интегральный', kpiInput));
+        fields.appendChild(addControl('Месяц работы', firstMonthButton));
+        if (newbie.firstMonth) {
+          fields.appendChild(addControl('Дни', daysInput));
+        }
+        body.appendChild(fields);
+        card.appendChild(summary);
+        card.appendChild(body);
+        inputs.newbieList.appendChild(card);
+      });
+    }
+
+    function animateValue(obj, start, end, duration, prefix = "", stateKey = null) {
+      if (stateKey && animationFrames[stateKey]) {
+        window.cancelAnimationFrame(animationFrames[stateKey]);
+      }
+      if (duration <= 0) {
+        obj.textContent = prefix + formatNum(end) + " ₽";
+        if (stateKey) state[stateKey] = end;
+        return;
+      }
+
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeOutQuart = (t) => 1 - (--t) * t * t * t;
+        const current = easeOutQuart(progress) * (end - start) + start;
+        obj.textContent = prefix + formatNum(current) + " ₽";
+        if (progress < 1) {
+          animationFrames[stateKey] = window.requestAnimationFrame(step);
+        } else {
+          obj.textContent = prefix + formatNum(end) + " ₽";
+          if (stateKey) {
+            state[stateKey] = end;
+            animationFrames[stateKey] = null;
+          }
+        }
+      };
+      animationFrames[stateKey] = window.requestAnimationFrame(step);
+    }
+
+    function setRangeFill(slider, value) {
+      const min = Number(slider.min) || 0;
+      const max = Number(slider.max) || 100;
+      const ratio = Math.min(1, Math.max(0, (value - min) / (max - min)));
+      slider.style.setProperty('--slider-track-bg', `linear-gradient(to right, var(--brand-red) ${ratio * 100}%, rgba(19, 9, 9, 0.1) ${ratio * 100}%)`);
+    }
+
+    function calculateUnder12Rate() {
+      const rules = MOTIVATION_RULES.under12;
+      const norm = under12Norms[state.under12Month];
+      const count = Math.max(0, Math.floor(state.under12ExperiencedCount));
+      const planRevenue = norm && count > 0 ? count * norm.base : 0;
+      const targetRatio = planRevenue > 0 ? state.under12ExperiencedRevenue / planRevenue : 0;
+      const rate = clamp(targetRatio * rules.rateMultiplier, rules.minRate, rules.maxRate);
+
+      return rate;
+    }
+
+    function calculateRate() {
+      if (state.experienceMode === 'under12') {
+        state.currentRate = calculateUnder12Rate();
+        outputs.rateNumber.value = state.currentRate.toFixed(1) + '%';
+        outputs.under12ExperiencedRateNumber.value = state.currentRate.toFixed(1) + '%';
+        outputs.under12NewbieRateNumber.value = MOTIVATION_RULES.under12.newbieRate.toFixed(1) + '%';
+        outputs.under12PersonalDealRateNumber.value = MOTIVATION_RULES.under12.personalDealRate.toFixed(1) + '%';
+        return;
+      }
+
+      if (state.isTop3Rgp) {
+        state.currentRate = MOTIVATION_RULES.maxRate;
+        outputs.rateNumber.value = state.currentRate.toFixed(1) + '%';
+        return;
+      }
+
+      const hasSeniorKpiValues = state.teamSize > 0 ||
+        state.planFulfillment > 0 ||
+        state.rdsShare > 0 ||
+        state.countryRdsShare > 0;
+
+      if (!hasSeniorKpiValues) {
+        state.currentRate = SENIOR_BASE_RATE;
+        outputs.rateNumber.value = state.currentRate.toFixed(1) + '%';
+        return;
+      }
+
+      let rate = SENIOR_BASE_RATE;
+
+      if (state.teamSize > 0) {
+        rate += getTierBonus(state.teamSize, MOTIVATION_RULES.senior.teamSize);
+      }
+
+      if (state.planFulfillment > 0) {
+        rate += getTierBonus(state.planFulfillment, MOTIVATION_RULES.senior.planFulfillment);
+      }
+
+      if (state.rdsShare > 0) {
+        rate += getTierBonus(state.rdsShare, MOTIVATION_RULES.senior.rdsShare);
+      }
+
+      if (state.countryRdsShare > 0) {
+        rate += getTierBonus(state.countryRdsShare, MOTIVATION_RULES.senior.countryRdsShare);
+      }
+
+      state.currentRate = Math.min(rate, MOTIVATION_RULES.maxRate);
+      outputs.rateNumber.value = state.currentRate.toFixed(1) + '%';
+    }
+
+    function updateUI(immediate = false) {
+      calculateRate();
+      inputs.resetButton.classList.toggle('hidden', !hasCalculatorValues());
+      const experiencedCount = Math.max(0, Math.floor(state.under12ExperiencedCount));
+      const experiencedPerPerson = experiencedCount > 0 ? state.under12ExperiencedRevenue / experiencedCount : 0;
+      const currentNorm = under12Norms[state.under12Month]?.base || 0;
+      const perPersonStatus = experiencedCount > 0 && experiencedPerPerson > 0 && currentNorm > 0
+        ? experiencedPerPerson < currentNorm
+          ? 'below'
+          : experiencedPerPerson === currentNorm
+            ? 'equal'
+            : 'above'
+        : '';
+      inputs.under12ExperiencedPerPerson.innerHTML = `Выручка на 1 опытного: <strong>${formatNum(experiencedPerPerson)} ₽</strong>`;
+      inputs.under12ExperiencedPerPerson.classList.remove('below', 'equal', 'above');
+      if (perPersonStatus) {
+        inputs.under12ExperiencedPerPerson.classList.add(perPersonStatus);
+      }
+      const newbieBonus = calculateNewbieBonus();
+      const manualKpiBonus = state.experienceMode === 'under12'
+        ? state.under12ManualKpiBonus
+        : state.seniorManualKpiBonus;
+      const salaryBonus = state.experienceMode === 'under12' ? state.under12Salary : 0;
+      const personalDealRate = state.experienceMode === 'under12'
+        ? MOTIVATION_RULES.under12.personalDealRate
+        : MOTIVATION_RULES.personalDealRate;
+      const personalDealBonus = state.experienceMode === 'under12'
+        ? state.under12PersonalDealRevenue * (personalDealRate / MOTIVATION_RULES.percentScale)
+        : state.seniorPersonalDealRevenue * (personalDealRate / MOTIVATION_RULES.percentScale);
+      outputs.newbieBonusInline.value = formatNum(newbieBonus) + ' ₽';
+      const calculationRevenue = state.experienceMode === 'under12'
+        ? state.under12NewbieRevenue + state.under12ExperiencedRevenue
+        : state.teamRevenue;
+      const under12RopRevenueBonus = state.experienceMode === 'under12'
+        ? calculationRevenue * (clamp(state.under12RopScore, 0, MOTIVATION_RULES.under12.ropMaxScore) / MOTIVATION_RULES.percentScale)
+        : 0;
+      const under12NewbieRevenueIncome = state.experienceMode === 'under12'
+        ? state.under12NewbieRevenue * (MOTIVATION_RULES.under12.newbieRate / MOTIVATION_RULES.percentScale)
+        : 0;
+      const under12ExperiencedRevenueIncome = state.experienceMode === 'under12'
+        ? state.under12ExperiencedRevenue * (state.currentRate / MOTIVATION_RULES.percentScale)
+        : 0;
+
+      if (calculationRevenue <= 0) {
+        const animDuration = immediate ? 0 : 2000;
+        const totalGrossBonus = newbieBonus + manualKpiBonus + salaryBonus + personalDealBonus;
+        const taxAmount = totalGrossBonus * MOTIVATION_RULES.taxRate;
+        const totalIncome = totalGrossBonus - taxAmount;
+        outputs.totalIncome.textContent = totalGrossBonus > 0 ? formatNum(totalIncome) + " ₽" : "—";
+        outputs.revenuePreview.textContent = "0,00 ₽";
+        outputs.incomeSubtitle.textContent = "";
+        animateValue(outputs.under12NewbieRevenuePreview, state.displayedUnder12NewbieRevenueIncome, under12NewbieRevenueIncome, animDuration, "", 'displayedUnder12NewbieRevenueIncome');
+        animateValue(outputs.under12ExperiencedRevenuePreview, state.displayedUnder12ExperiencedRevenueIncome, under12ExperiencedRevenueIncome, animDuration, "", 'displayedUnder12ExperiencedRevenueIncome');
+        animateValue(outputs.grossBonusPreview, state.displayedGrossBonus, totalGrossBonus, animDuration, "", 'displayedGrossBonus');
+        animateValue(outputs.taxValuePreview, state.displayedTax, taxAmount, animDuration, "-", 'displayedTax');
+        animateValue(outputs.salaryPreview, state.displayedSalaryBonus, salaryBonus, animDuration, "", 'displayedSalaryBonus');
+        animateValue(outputs.personalDealBonusPreview, state.displayedPersonalDealBonus, personalDealBonus, animDuration, "", 'displayedPersonalDealBonus');
+        animateValue(outputs.newbieBonusPreview, state.displayedNewbieBonus, newbieBonus, animDuration, "", 'displayedNewbieBonus');
+        animateValue(outputs.manualKpiBonusPreview, state.displayedManualKpiBonus, manualKpiBonus, animDuration, "", 'displayedManualKpiBonus');
+        animateValue(outputs.finalRatePreview, state.displayedFinalIncome, totalIncome, animDuration, "", 'displayedFinalIncome');
+        return;
+      }
+
+      const grossBonus = state.experienceMode === 'under12'
+        ? under12NewbieRevenueIncome + under12ExperiencedRevenueIncome + under12RopRevenueBonus
+        : state.teamRevenue * (state.currentRate / MOTIVATION_RULES.percentScale);
+      const totalGrossBonus = grossBonus + newbieBonus + manualKpiBonus + salaryBonus + personalDealBonus;
+      const taxAmount = totalGrossBonus * MOTIVATION_RULES.taxRate;
+      const totalIncome = totalGrossBonus - taxAmount;
+
+      const animDuration = immediate ? 0 : 2000;
+
+      animateValue(outputs.revenuePreview, state.displayedRevenue, calculationRevenue, animDuration, "", 'displayedRevenue');
+      animateValue(outputs.under12NewbieRevenuePreview, state.displayedUnder12NewbieRevenueIncome, under12NewbieRevenueIncome, animDuration, "", 'displayedUnder12NewbieRevenueIncome');
+      animateValue(outputs.under12ExperiencedRevenuePreview, state.displayedUnder12ExperiencedRevenueIncome, under12ExperiencedRevenueIncome, animDuration, "", 'displayedUnder12ExperiencedRevenueIncome');
+      animateValue(outputs.salaryPreview, state.displayedSalaryBonus, salaryBonus, animDuration, "", 'displayedSalaryBonus');
+      animateValue(outputs.personalDealBonusPreview, state.displayedPersonalDealBonus, personalDealBonus, animDuration, "", 'displayedPersonalDealBonus');
+      animateValue(outputs.grossBonusPreview, state.displayedGrossBonus, totalGrossBonus, animDuration, "", 'displayedGrossBonus');
+      animateValue(outputs.taxValuePreview, state.displayedTax, taxAmount, animDuration, "-", 'displayedTax');
+      animateValue(outputs.newbieBonusPreview, state.displayedNewbieBonus, newbieBonus, animDuration, "", 'displayedNewbieBonus');
+      animateValue(outputs.manualKpiBonusPreview, state.displayedManualKpiBonus, manualKpiBonus, animDuration, "", 'displayedManualKpiBonus');
+      
+      animateValue(outputs.totalIncome, state.displayedIncome, totalIncome, animDuration, "", 'displayedIncome');
+      animateValue(outputs.finalRatePreview, state.displayedFinalIncome, totalIncome, animDuration, "", 'displayedFinalIncome');
+      outputs.incomeSubtitle.textContent = "";
+    }
+
+    const setupPercentSlider = (slider, label, stateKey) => {
+      slider.addEventListener('input', (e) => {
+        const value = parseInt(e.target.value, 10) || 0;
+        state[stateKey] = value;
+        label.textContent = `${value}%`;
+        setRangeFill(e.target, value);
+        updateUI(true);
+      });
+
+      setRangeFill(slider, state[stateKey]);
+    };
+
+    setupPercentSlider(inputs.planFulfillmentSlider, inputs.planFulfillmentLabel, 'planFulfillment');
+    setupPercentSlider(inputs.rdsShareSlider, inputs.rdsShareLabel, 'rdsShare');
+    setupPercentSlider(inputs.countryRdsShareSlider, inputs.countryRdsShareLabel, 'countryRdsShare');
+
+    inputs.experienceModeGroup.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('toggle-btn')) return;
+
+      applyExperienceMode(e.target.dataset.value);
+      updateUI(true);
+    });
+
+    inputs.revenue.addEventListener('input', (e) => {
+      let rawValue = parseNum(e.target.value);
+      state.teamRevenue = rawValue;
+      formatNumberInput(e.target, ' ₽');
+      updateUI();
+    });
+
+    inputs.teamSizeSlider.addEventListener('input', (e) => {
+      state.teamSize = parseInt(e.target.value, 10);
+      inputs.teamSizeLabel.textContent = `${state.teamSize} чел.`;
+      setRangeFill(e.target, state.teamSize);
+      updateUI(true);
+    });
+
+    const setupNumberInput = (input, stateKey, options = {}) => {
+      input.addEventListener('input', (e) => {
+        const max = options.max ?? Infinity;
+        let value = parseNum(e.target.value);
+
+        value = clamp(value, 0, max);
+        state[stateKey] = value;
+        if (options.liveFormat !== false) {
+          formatNumberInput(e.target, options.suffix || '');
+        }
+        updateUI();
+      });
+
+      input.addEventListener('blur', (e) => {
+        const value = state[stateKey];
+        const shouldFormat = options.format !== false;
+
+        if (value === 0) {
+          e.target.value = '';
+          return;
+        }
+
+        e.target.value = shouldFormat
+          ? new Intl.NumberFormat('ru-RU').format(Math.floor(value)) + (options.suffix || '')
+          : String(value);
+      });
+    };
+
+    inputs.newbieCount.addEventListener('input', (e) => {
+      const count = Math.max(0, Math.floor(parseNum(e.target.value)));
+      const currentNewbies = getActiveNewbies();
+      setActiveNewbieCount(count);
+      setActiveNewbies(Array.from({ length: count }, (_, index) => currentNewbies[index] || { kpi: 0, days: 0, firstMonth: false }));
+      e.target.value = count === 0 ? '' : new Intl.NumberFormat('ru-RU').format(count);
+      renderNewbieFields();
+      updateUI();
+    });
+
+    setupNumberInput(inputs.manualKpiBonus, 'seniorManualKpiBonus', { suffix: ' ₽' });
+    setupNumberInput(inputs.seniorPersonalDealRevenue, 'seniorPersonalDealRevenue', { suffix: ' ₽' });
+    setupNumberInput(inputs.under12NewbieRevenue, 'under12NewbieRevenue');
+    setupNumberInput(inputs.under12ExperiencedRevenue, 'under12ExperiencedRevenue');
+    setupNumberInput(inputs.under12ExperiencedCount, 'under12ExperiencedCount', { liveFormat: false });
+    setupNumberInput(inputs.under12ManualKpiBonus, 'under12ManualKpiBonus', { suffix: ' ₽' });
+    setupNumberInput(inputs.under12PersonalDealRevenue, 'under12PersonalDealRevenue', { suffix: ' ₽' });
+    setupNumberInput(inputs.under12Salary, 'under12Salary');
+
+    inputs.under12RopScoreButtons.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('rop-score-btn')) return;
+
+      state.under12RopScore = Number(e.target.dataset.value) || 0;
+      updateRopScoreButtons();
+      updateUI(true);
+    });
+
+    inputs.top3RgpButtons.addEventListener('click', (e) => {
+      const button = e.target.closest('.rop-score-btn');
+      if (!button) return;
+
+      state.isTop3Rgp = Boolean(Number(button.dataset.value));
+      updateTop3RgpButtons();
+      updateUI(true);
+    });
+
+    inputs.resetButton.addEventListener('click', resetCalculator);
+
+    function setupBasicSourceProtection() {
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        const withModifier = e.ctrlKey || e.metaKey;
+
+        if (
+          e.key === 'F12' ||
+          (withModifier && key === 'u') ||
+          (withModifier && e.shiftKey && ['i', 'j', 'c'].includes(key))
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      setRangeFill(inputs.planFulfillmentSlider, state.planFulfillment);
+      setRangeFill(inputs.rdsShareSlider, state.rdsShare);
+      setRangeFill(inputs.countryRdsShareSlider, state.countryRdsShare);
+      setRangeFill(inputs.teamSizeSlider, state.teamSize);
+    });
+
+    auth.partnerCodeInput.addEventListener('input', () => {
+      auth.partnerCodeInput.value = auth.partnerCodeInput.value.replace(/\D/g, '').slice(0, currentChallenge.length);
+    });
+
+    auth.form.addEventListener('submit', checkAccess);
+    auth.logoutButton.addEventListener('click', logout);
+    setInterval(updateCurrentDateTime, 1000);
+    setupBasicSourceProtection();
+    updateUnder12NormDisplay();
+    updateTop3RgpButtons();
+    restoreAuthSession();
+  </script>
+</body>
+</html>

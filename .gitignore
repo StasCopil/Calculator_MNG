@@ -1,0 +1,6 @@
+config.js
+gas-auth-test.gs
+.env
+*.local
+.DS_Store
+.vscode/

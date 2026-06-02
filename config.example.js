@@ -1,0 +1,3 @@
+window.PULSE_CONFIG = {
+  AUTH_GAS_URL: 'PASTE_GAS_URL_HERE',
+};

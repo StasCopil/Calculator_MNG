@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход — Пульс недвижимости</title>
+  <style>
+    @font-face {
+      font-family: 'Circe';
+      src: local('Circe'), local('Circe-Regular');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --brand-red: #FC403A;
+      --brand-dark: #130909;
+      --brand-light: #F1F1F1;
+      --white: #FFFFFF;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow: 0 12px 40px rgba(19, 9, 9, 0.06);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Circe", "Segoe UI", Roboto, sans-serif;
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      line-height: 1.4;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 700px;
+      padding: 32px;
+      border-radius: var(--radius);
+      background: var(--white);
+      border: 1px solid rgba(19, 9, 9, 0.05);
+      box-shadow: var(--shadow);
+    }
+
+    .app-header { margin-bottom: 32px; }
+
+    .app-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+    }
+
+    .app-title span { color: var(--brand-red); }
+
+    .app-subtitle {
+      font-size: 14px;
+      color: var(--brand-dark);
+      opacity: 0.6;
+      margin: 0;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .access-disclaimer {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: var(--brand-light);
+      font-size: 13px;
+      color: rgba(19, 9, 9, 0.75);
+    }
+
+    .access-confirmation {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--brand-dark);
+      cursor: pointer;
+    }
+
+    .access-confirmation input {
+      width: 18px;
+      height: 18px;
+      margin: 1px 0 0;
+      flex: 0 0 auto;
+      accent-color: var(--brand-red);
+      cursor: pointer;
+    }
+
+    .main-input {
+      width: 100%;
+      margin-bottom: 14px;
+      background: var(--brand-light);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 24px;
+      font-weight: 800;
+      font-family: inherit;
+      color: var(--brand-dark);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .main-input:focus {
+      border-color: var(--brand-red);
+      background: var(--white);
+    }
+
+    .main-input[readonly] {
+      opacity: 0.65;
+    }
+
+    .main-input:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      background: var(--brand-red);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .primary-btn:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .auth-message {
+      min-height: 20px;
+      margin: 14px 0 0;
+      font-size: 14px;
+      color: var(--brand-red);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 640px) {
+      .card { padding: 24px; }
+      .app-title { font-size: 28px; }
+      .main-input { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="card">
+    <div class="app-header">
+      <h1 class="app-title"><span>Пульс</span> недвижимости</h1>
+      <p class="app-subtitle">Вход для руководителей</p>
+    </div>
+
+    <form id="authForm">
+      <p class="access-disclaimer">
+        Доступ к сервису предоставляется только действующим сотрудникам и партнёрам агентства недвижимости «Этажи», которым компания предоставила разрешение на использование сервиса.
+        <br><br>
+        Сервис «Пульс недвижимости» является внутренним служебным инструментом агентства недвижимости «Этажи» и предназначен только для расчёта предварительных показателей в рамках рабочих задач.
+        <br><br>
+        Использование сервиса лицами без разрешения, передача доступа другим лицам, копирование внутренних данных и распространение материалов сервиса не допускаются.
+        <br><br>
+        Расчёты в сервисе носят предварительный информационный характер и могут отличаться от итоговых данных после официальной проверки.
+        <br><br>
+        Факт входа и использования сервиса может фиксироваться в целях контроля доступа, безопасности и служебной аналитики.
+      </p>
+
+      <label class="access-confirmation" for="accessCheckbox">
+        <input type="checkbox" id="accessCheckbox">
+        <span>Я ознакомился с условиями доступа и подтверждаю, что являюсь действующим сотрудником или партнёром агентства недвижимости «Этажи».</span>
+      </label>
+
+      <label class="field-label" for="fioInput">Введите ФИО полностью</label>
+      <input type="text" id="fioInput" class="main-input" placeholder="Фамилия Имя Отчество" autocomplete="name" disabled>
+      <input type="text" id="partnerCodeInput" class="main-input hidden" inputmode="numeric" autocomplete="off">
+      <button class="primary-btn" id="authButton" type="submit">Продолжить</button>
+    </form>
+    <p class="auth-message" id="authMessage"></p>
+  </section>
+
+  <script src="config.js"></script>
+  <script>
+    const AUTH_GAS_URL = window.PULSE_CONFIG?.AUTH_GAS_URL || '';
+    const AUTH_SESSION_KEY = 'mng_auth_session_v1';
+    const AUTH_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+
+    const auth = {
+      form: document.getElementById('authForm'),
+      accessCheckbox: document.getElementById('accessCheckbox'),
+      fioInput: document.getElementById('fioInput'),
+      partnerCodeInput: document.getElementById('partnerCodeInput'),
+      button: document.getElementById('authButton'),
+      message: document.getElementById('authMessage')
+    };
+
+    const challengeTypes = [
+      { key: 'first4', prompt: 'Введите первые 4 цифры вашего кода партнера', length: 4 },
+      { key: 'last4', prompt: 'Введите последние 4 цифры вашего кода партнера', length: 4 },
+      { key: 'first3', prompt: 'Введите первые 3 цифры вашего кода партнера', length: 3 },
+      { key: 'last3', prompt: 'Введите последние 3 цифры вашего кода партнера', length: 3 },
+      { key: 'first2', prompt: 'Введите первые 2 цифры вашего кода партнера', length: 2 },
+      { key: 'last2', prompt: 'Введите последние 2 цифры вашего кода партнера', length: 2 },
+    ];
+    const currentChallenge = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+    let authStep = 1;
+
+    function getSavedSession() {
+      try {
+        const savedSession = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
+
+        if (
+          !savedSession ||
+          !savedSession.user ||
+          savedSession.user.tenureMonths === undefined ||
+          savedSession.user.tenureMonths === null ||
+          savedSession.user.tenureMonths === '' ||
+          Date.now() > savedSession.expiresAt
+        ) {
+          localStorage.removeItem(AUTH_SESSION_KEY);
+          return null;
+        }
+
+        return savedSession;
+      } catch (error) {
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        return null;
+      }
+    }
+
+    function saveAuthSession(user) {
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+        user: user,
+        expiresAt: Date.now() + AUTH_SESSION_TTL_MS
+      }));
+    }
+
+    function hasTenureMonths(user) {
+      return user && user.tenureMonths !== undefined && user.tenureMonths !== null && user.tenureMonths !== '';
+    }
+
+    function isValidFio(fio) {
+      return /^[A-Za-zА-Яа-яЁё]+(?:[ -][A-Za-zА-Яа-яЁё]+)*$/.test(fio);
+    }
+
+    function openCalculator() {
+      window.location.href = 'index.html';
+    }
+
+    function resetAuthForm() {
+      authStep = 1;
+      auth.fioInput.readOnly = false;
+      auth.fioInput.value = '';
+      auth.partnerCodeInput.classList.add('hidden');
+      auth.partnerCodeInput.value = '';
+      auth.button.disabled = false;
+      auth.button.textContent = 'Продолжить';
+
+      if (!auth.fioInput.disabled) {
+        auth.fioInput.focus();
+      }
+    }
+
+    function resetAuthAndReload() {
+      localStorage.removeItem(AUTH_SESSION_KEY);
+      auth.form.reset();
+      auth.fioInput.disabled = true;
+      auth.message.textContent = '';
+      resetAuthForm();
+      window.location.reload();
+    }
+
+    function callAuthApi(payload) {
+      return new Promise((resolve, reject) => {
+        if (!AUTH_GAS_URL) {
+          reject(new Error('Не настроена ссылка авторизации'));
+          return;
+        }
+
+        const callbackName = 'mngAuthCallback' + Date.now() + Math.floor(Math.random() * 1000);
+        const script = document.createElement('script');
+        const params = new URLSearchParams(payload);
+        let timeoutId;
+
+        params.set('callback', callbackName);
+
+        window[callbackName] = (data) => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          script.remove();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Ошибка подключения'));
+        };
+
+        timeoutId = setTimeout(() => {
+          delete window[callbackName];
+          script.remove();
+          reject(new Error('Превышено время ожидания'));
+        }, 12000);
+
+        script.src = AUTH_GAS_URL + '?' + params.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    async function checkAccess(e) {
+      e.preventDefault();
+
+      if (!auth.accessCheckbox.checked) {
+        auth.message.textContent = 'Подтвердите условия доступа.';
+        return;
+      }
+
+      const fio = auth.fioInput.value.trim();
+
+      if (!fio) {
+        auth.message.textContent = 'Введите ФИО полностью.';
+        return;
+      }
+
+      if (!isValidFio(fio)) {
+        auth.message.textContent = 'ФИО должно содержать только буквы, пробелы и дефис.';
+        return;
+      }
+
+      if (authStep === 1) {
+        authStep = 2;
+        auth.fioInput.readOnly = true;
+        auth.partnerCodeInput.classList.remove('hidden');
+        auth.partnerCodeInput.placeholder = currentChallenge.prompt;
+        auth.partnerCodeInput.maxLength = String(currentChallenge.length);
+        auth.button.textContent = 'Подтвердить вход';
+        auth.message.textContent = '';
+        auth.partnerCodeInput.focus();
+        return;
+      }
+
+      const answer = auth.partnerCodeInput.value.trim();
+
+      if (answer.length !== currentChallenge.length) {
+        auth.message.textContent = 'Введите ' + currentChallenge.length + ' цифры кода партнера.';
+        return;
+      }
+
+      auth.button.disabled = true;
+      auth.button.textContent = 'Проверяем...';
+      auth.message.textContent = 'Проверяем данные...';
+
+      try {
+        const result = await callAuthApi({
+          action: 'auth',
+          fio: fio,
+          challengeType: currentChallenge.key,
+          answer: answer,
+          calculatorType: 'Калькулятор РГП'
+        });
+
+        if (!result.ok) {
+          if (result.error === 'Найдено несколько совпадений. Начните вход заново') {
+            resetAuthAndReload();
+            return;
+          }
+
+          auth.message.textContent = result.error || 'Данные указаны неверно.';
+          resetAuthForm();
+          return;
+        }
+
+        if (!hasTenureMonths(result.user)) {
+          auth.message.textContent = 'Вход найден, но GAS не передал стаж из столбца E. Обновите деплой GAS.';
+          return;
+        }
+
+        saveAuthSession(result.user);
+        openCalculator();
+      } catch (error) {
+        auth.message.textContent = 'Не удалось проверить данные. Попробуйте позже.';
+        resetAuthForm();
+      } finally {
+        auth.button.disabled = false;
+        auth.button.textContent = authStep === 1 ? 'Продолжить' : 'Подтвердить вход';
+      }
+    }
+
+    if (getSavedSession()) {
+      openCalculator();
+    }
+
+    function setupBasicSourceProtection() {
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        const withModifier = e.ctrlKey || e.metaKey;
+
+        if (
+          e.key === 'F12' ||
+          (withModifier && key === 'u') ||
+          (withModifier && e.shiftKey && ['i', 'j', 'c'].includes(key))
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+
+    auth.partnerCodeInput.addEventListener('input', () => {
+      auth.partnerCodeInput.value = auth.partnerCodeInput.value.replace(/\D/g, '').slice(0, currentChallenge.length);
+    });
+
+    auth.accessCheckbox.addEventListener('change', () => {
+      auth.fioInput.disabled = !auth.accessCheckbox.checked;
+
+      if (auth.accessCheckbox.checked) {
+        auth.message.textContent = '';
+        auth.fioInput.focus();
+      } else {
+        authStep = 1;
+        auth.fioInput.value = '';
+        auth.fioInput.readOnly = false;
+        auth.partnerCodeInput.classList.add('hidden');
+        auth.partnerCodeInput.value = '';
+        auth.button.textContent = 'Продолжить';
+      }
+    });
+
+    auth.form.addEventListener('submit', checkAccess);
+    setupBasicSourceProtection();
+  </script>
+</body>
+</html>
