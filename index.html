@@ -2379,6 +2379,12 @@
         .replace(/\s+/g, ' ');
     }
 
+    function cleanFioInput(value) {
+      return String(value || '')
+        .replace(/\s*\([^)]*\)\s*$/g, '')
+        .trim();
+    }
+
     function logout() {
       clearAuthSession();
       window.location.href = 'login.html';
@@ -2400,7 +2406,8 @@
     async function checkAccess(e) {
       e.preventDefault();
 
-      const fio = auth.fioInput.value.trim();
+      const fio = cleanFioInput(auth.fioInput.value);
+      auth.fioInput.value = fio;
 
       if (!fio) {
         auth.message.textContent = 'Введите ФИО полностью.';
