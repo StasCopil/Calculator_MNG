@@ -208,6 +208,8 @@
     const AUTH_GAS_URL = window.PULSE_CONFIG?.AUTH_GAS_URL || '';
     const AUTH_SESSION_KEY = 'mng_auth_session_v1';
     const AUTH_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+    const LOG_MAX_ATTEMPTS = 3;
+    const LOG_RETRY_DELAY_MS = 1500;
 
     const auth = {
       form: document.getElementById('authForm'),
@@ -333,6 +335,43 @@
       });
     }
 
+    function delay(ms) {
+      return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    async function logCalculatorOpen(fio) {
+      let lastError;
+
+      for (let attempt = 1; attempt <= LOG_MAX_ATTEMPTS; attempt++) {
+        try {
+          console.log('Пробуем записать лог входа:', { fio: fio, attempt: attempt });
+
+          const result = await callAuthApi({
+            action: 'logCalculator',
+            fio: fio,
+            calculatorType: 'Калькулятор РГП'
+          });
+
+          console.log('Ответ GAS на лог входа:', result);
+
+          if (!result || !result.ok) {
+            throw new Error(result?.error || 'GAS не подтвердил запись лога');
+          }
+
+          console.log('Лог входа записан.');
+          return;
+        } catch (error) {
+          lastError = error;
+
+          if (attempt < LOG_MAX_ATTEMPTS) {
+            await delay(LOG_RETRY_DELAY_MS);
+          }
+        }
+      }
+
+      throw lastError || new Error('Лог не записан');
+    }
+
     async function checkAccess(e) {
       e.preventDefault();
 
@@ -401,10 +440,12 @@
           return;
         }
 
+        auth.message.textContent = 'Записываем лог входа...';
+        await logCalculatorOpen(result.user.fio || fio);
         saveAuthSession(result.user);
         openCalculator();
       } catch (error) {
-        auth.message.textContent = 'Не удалось проверить данные. Попробуйте позже.';
+        auth.message.textContent = 'Не удалось проверить данные или записать лог. Попробуйте позже.';
         resetAuthForm();
       } finally {
         auth.button.disabled = false;
