@@ -208,6 +208,7 @@
     const AUTH_GAS_URL = window.PULSE_CONFIG?.AUTH_GAS_URL || '';
     const AUTH_SESSION_KEY = 'mng_auth_session_v1';
     const AUTH_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+    const LOG_SKIP_NEXT_INDEX_KEY = 'mng_skip_next_index_log_v1';
     const LOG_MAX_ATTEMPTS = 3;
     const LOG_RETRY_DELAY_MS = 1500;
 
@@ -365,6 +366,7 @@
           }
 
           console.log('Лог входа записан.');
+          sessionStorage.setItem(LOG_SKIP_NEXT_INDEX_KEY, '1');
           return;
         } catch (error) {
           lastError = error;
