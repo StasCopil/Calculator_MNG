@@ -269,6 +269,12 @@
       return /^[A-Za-zА-Яа-яЁё]+(?:[ -][A-Za-zА-Яа-яЁё]+)*$/.test(fio);
     }
 
+    function cleanFioInput(value) {
+      return String(value || '')
+        .replace(/\s*\([^)]*\)\s*$/g, '')
+        .trim();
+    }
+
     function openCalculator() {
       window.location.href = 'index.html';
     }
@@ -380,7 +386,8 @@
         return;
       }
 
-      const fio = auth.fioInput.value.trim();
+      const fio = cleanFioInput(auth.fioInput.value);
+      auth.fioInput.value = fio;
 
       if (!fio) {
         auth.message.textContent = 'Введите ФИО полностью.';
