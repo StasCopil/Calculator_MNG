@@ -2220,14 +2220,23 @@
     function logCalculatorOpen(fio, attempt = 1) {
       if (!fio) return;
 
+      console.log('Пробуем записать лог открытия калькулятора:', {
+        fio: fio,
+        attempt: attempt
+      });
+
       callAuthApi({
         action: 'logCalculator',
         fio: fio,
         calculatorType: 'Калькулятор РГП'
       }).then((result) => {
+        console.log('Ответ GAS на лог открытия калькулятора:', result);
+
         if (!result || !result.ok) {
           throw new Error(result?.error || 'GAS не подтвердил запись лога');
         }
+
+        console.log('Лог открытия калькулятора записан.');
       }).catch((error) => {
         if (attempt < LOG_MAX_ATTEMPTS) {
           window.setTimeout(() => logCalculatorOpen(fio, attempt + 1), LOG_RETRY_DELAY_MS);
