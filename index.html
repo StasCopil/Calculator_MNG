@@ -2121,6 +2121,7 @@
     let authStep = 1;
     const AUTH_SESSION_KEY = 'mng_auth_session_v1';
     const AUTH_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+    const LOG_SKIP_NEXT_INDEX_KEY = 'mng_skip_next_index_log_v1';
     const MOTIVATION_RULES = JSON.parse(atob('eyJwZXJjZW50U2NhbGUiOjEwMCwidGF4UmF0ZSI6MC4wNiwiYmFzZVJhdGUiOjIuMCwibWF4UmF0ZSI6Ni4wLCJwZXJzb25hbERlYWxSYXRlIjoxLjAsInVuZGVyMTIiOnsibmV3YmllUmF0ZSI6NS4wLCJwZXJzb25hbERlYWxSYXRlIjoxLjAsInJhdGVNdWx0aXBsaWVyIjo0LCJtaW5SYXRlIjoyLjUsIm1heFJhdGUiOjUuMCwicm9wTWF4U2NvcmUiOjAuNSwibm9ybXMiOnsiamFuIjp7ImJhc2UiOjg2NDUwLCJtYXgiOjEwNTAwMH0sImZlYiI6eyJiYXNlIjoxNDEwNTUsIm1heCI6MTc2MzE5fSwibWFyIjp7ImJhc2UiOjIxMTU4MywibWF4IjoyNjQ0Nzl9LCJhcHIiOnsiYmFzZSI6MjIxNzIyLCJtYXgiOjI3NzE1M30sIm1heSI6eyJiYXNlIjoxODQxMDgsIm1heCI6MjMwMTM1fSwianVuIjp7ImJhc2UiOjIwMjY5NCwibWF4IjoyNTMzNjh9LCJqdWwiOnsiYmFzZSI6MjE5OTQ1LCJtYXgiOjI3NDkzMX0sImF1ZyI6eyJiYXNlIjoyMzAwMDgsIm1heCI6Mjg3NTEwfSwic2VwIjp7ImJhc2UiOjI1MzEzMCwibWF4IjozMTY0MTN9LCJvY3QiOnsiYmFzZSI6MzI3NTgwLCJtYXgiOjQwOTQ3NX0sIm5vdiI6eyJiYXNlIjozMjc1ODAsIm1heCI6NDA5NDc1fSwiZGVjIjp7ImJhc2UiOjM2NDgwNSwibWF4Ijo0NTYwMDZ9fX0sIm5ld2JpZSI6eyJmdWxsV29ya0RheXMiOjIyLCJtYXhCb251cyI6NDAwMCwia3BpQmFzZSI6ODB9LCJzZW5pb3IiOnsidGVhbVNpemUiOltbMTUsMS4wXSxbMTMsMC44XSxbMTAsMC41XSxbMSwwLjFdXSwicGxhbkZ1bGZpbGxtZW50IjpbWzEyMSwxLjBdLFsxMDEsMC45XSxbOTEsMC44XSxbODAsMC41XSxbMSwwLjNdXSwicmRzU2hhcmUiOltbNjAsMS4wXSxbNTAsMC44XSxbNDAsMC41XSxbMSwwLjFdXSwiY291bnRyeVJkc1NoYXJlIjpbWzIxLDEuMF0sWzExLDAuNV1dfX0='));
     const SENIOR_BASE_RATE = MOTIVATION_RULES.baseRate;
     const LOG_MAX_ATTEMPTS = 3;
@@ -2219,6 +2220,11 @@
 
     function logCalculatorOpen(fio, attempt = 1) {
       if (!fio) return;
+
+      if (attempt === 1 && sessionStorage.getItem(LOG_SKIP_NEXT_INDEX_KEY) === '1') {
+        sessionStorage.removeItem(LOG_SKIP_NEXT_INDEX_KEY);
+        return;
+      }
 
       console.log('Пробуем записать лог открытия калькулятора:', {
         fio: fio,
