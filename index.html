@@ -188,6 +188,28 @@
       align-items: start;
     }
 
+    .revenue-category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .revenue-category-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--brand-dark);
+    }
+
+    .revenue-deduction-hint {
+      margin: 8px 0 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: rgba(19, 9, 9, 0.62);
+    }
+
     .rop-score-toggle.top3-rgp-toggle {
       width: auto;
       min-width: 0;
@@ -735,6 +757,27 @@
       grid-template-columns: minmax(0, 1fr) 72px;
       gap: 7px;
       align-items: start;
+    }
+
+    .under12-revenue-split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .under12-revenue-label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .under12-revenue-card-title {
+      justify-content: center;
+      text-align: center;
     }
 
     .under12-combo-fields .main-input {
@@ -1368,8 +1411,16 @@
     }
 
     body.senior-mode .senior-revenue-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       align-items: end;
+    }
+
+    body.senior-mode #seniorRevenueField {
+      grid-column: span 2;
+    }
+
+    body.senior-mode #seniorRevenueField > .field-label {
+      text-align: center;
     }
 
     body.senior-mode #top3RgpHome,
@@ -1389,6 +1440,12 @@
 
     body.senior-mode #seniorManualKpiField .main-input {
       width: 100%;
+      min-height: 44px;
+      font-size: 19px;
+      padding: 9px 14px;
+    }
+
+    body.senior-mode #seniorRevenueField .main-input {
       min-height: 44px;
       font-size: 19px;
       padding: 9px 14px;
@@ -1695,6 +1752,9 @@
       .senior-revenue-row {
         grid-template-columns: 1fr;
       }
+      .revenue-category-grid {
+        grid-template-columns: 1fr;
+      }
       .under12-rate-grid {
         grid-template-columns: 1fr;
       }
@@ -1704,6 +1764,9 @@
       body.senior-mode .senior-revenue-row,
       body.senior-mode #seniorBonusSection .bonus-grid {
         grid-template-columns: 1fr;
+      }
+      body.senior-mode #seniorRevenueField {
+        grid-column: auto;
       }
       .result-card {
         position: static;
@@ -1795,8 +1858,19 @@
         <div class="senior-revenue-row" id="seniorRevenueRow">
           <div id="seniorRevenueField">
             <label class="field-label">Валовая выручка команды за тек.мес.</label>
-            <div class="input-wrapper">
-              <input type="text" id="teamRevenue" class="main-input" placeholder="10 000 000" inputmode="numeric">
+            <div class="revenue-category-grid">
+              <div>
+                <label class="revenue-category-label" for="newBuildingRevenue">ВВ новостройки</label>
+                <div class="input-wrapper">
+                  <input type="text" id="newBuildingRevenue" class="main-input" placeholder="0" inputmode="numeric">
+                </div>
+              </div>
+              <div>
+                <label class="revenue-category-label" for="secondaryRevenue">Остальной ВВ</label>
+                <div class="input-wrapper">
+                  <input type="text" id="secondaryRevenue" class="main-input" placeholder="0" inputmode="numeric">
+                </div>
+              </div>
             </div>
           </div>
           <div id="top3RgpHome"></div>
@@ -1832,14 +1906,33 @@
               </div>
               <div class="under12-metrics">
                 <div class="under12-card">
-                  <label class="field-label" for="under12NewbieRevenue">Выручка партнеров новичков</label>
-                  <input type="text" id="under12NewbieRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                  <label class="field-label under12-revenue-card-title">Выручка партнеров новичков</label>
+                  <div class="under12-revenue-split">
+                    <div>
+                      <label class="under12-revenue-label" for="under12NewbieNewBuildingRevenue">ВВ новостройки</label>
+                      <input type="text" id="under12NewbieNewBuildingRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                    </div>
+                    <div>
+                      <label class="under12-revenue-label" for="under12NewbieOtherRevenue">Остальной ВВ</label>
+                      <input type="text" id="under12NewbieOtherRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                    </div>
+                  </div>
                 </div>
                 <div class="under12-card under12-combo-card">
-                  <label class="field-label" for="under12ExperiencedRevenue">Выручка опытных 6+</label>
+                  <label class="field-label under12-revenue-card-title">Выручка опытных 6+</label>
                   <div class="under12-combo-fields">
-                    <input type="text" id="under12ExperiencedRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric" aria-label="Выручка опытных 6+ мес.">
+                    <div class="under12-revenue-split">
+                      <div>
+                        <label class="under12-revenue-label" for="under12ExperiencedNewBuildingRevenue">ВВ новостройки</label>
+                        <input type="text" id="under12ExperiencedNewBuildingRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                      </div>
+                      <div>
+                        <label class="under12-revenue-label" for="under12ExperiencedOtherRevenue">Остальной ВВ</label>
+                        <input type="text" id="under12ExperiencedOtherRevenue" class="main-input" placeholder="0 ₽" inputmode="numeric">
+                      </div>
+                    </div>
                     <div class="under12-combo-small">
+                      <label class="under12-revenue-label" for="under12ExperiencedCount">Количество</label>
                       <input type="text" id="under12ExperiencedCount" class="main-input" placeholder="чел." inputmode="numeric" aria-label="Количество опытных сотрудников 6+">
                     </div>
                     <div class="under12-per-experienced" id="under12ExperiencedPerPerson">Выручка на 1 опытного: <strong>0,00 ₽</strong></div>
@@ -2131,9 +2224,15 @@
       experienceMode: 'senior',
       canSwitchExperienceMode: false,
       teamRevenue: 0,
+      newBuildingRevenue: 0,
+      secondaryRevenue: 0,
       under12Month: getCurrentMonthKey(),
       under12NewbieRevenue: 0,
       under12ExperiencedRevenue: 0,
+      under12NewbieNewBuildingRevenue: 0,
+      under12NewbieOtherRevenue: 0,
+      under12ExperiencedNewBuildingRevenue: 0,
+      under12ExperiencedOtherRevenue: 0,
       under12ExperiencedCount: 0,
       under12RopScore: 0,
       under12Salary: 0,
@@ -2482,7 +2581,8 @@
     }
 
     const inputs = {
-      revenue: document.getElementById('teamRevenue'),
+      newBuildingRevenue: document.getElementById('newBuildingRevenue'),
+      secondaryRevenue: document.getElementById('secondaryRevenue'),
       seniorFinancialSection: document.getElementById('seniorFinancialSection'),
       seniorRevenueRow: document.getElementById('seniorRevenueRow'),
       seniorRevenueField: document.getElementById('seniorRevenueField'),
@@ -2502,8 +2602,10 @@
       under12InstructionList: document.getElementById('under12InstructionList'),
       under12NormDisplay: document.getElementById('under12NormDisplay'),
       under12MonthLabel: document.getElementById('under12MonthLabel'),
-      under12NewbieRevenue: document.getElementById('under12NewbieRevenue'),
-      under12ExperiencedRevenue: document.getElementById('under12ExperiencedRevenue'),
+      under12NewbieNewBuildingRevenue: document.getElementById('under12NewbieNewBuildingRevenue'),
+      under12NewbieOtherRevenue: document.getElementById('under12NewbieOtherRevenue'),
+      under12ExperiencedNewBuildingRevenue: document.getElementById('under12ExperiencedNewBuildingRevenue'),
+      under12ExperiencedOtherRevenue: document.getElementById('under12ExperiencedOtherRevenue'),
       under12ExperiencedCount: document.getElementById('under12ExperiencedCount'),
       under12ExperiencedPerPerson: document.getElementById('under12ExperiencedPerPerson'),
       under12RopBonusCard: document.querySelector('.under12-rop-bonus-card'),
@@ -2665,9 +2767,15 @@
 
     function resetCalculator() {
       state.teamRevenue = 0;
+      state.newBuildingRevenue = 0;
+      state.secondaryRevenue = 0;
       state.under12Month = getCurrentMonthKey();
       state.under12NewbieRevenue = 0;
       state.under12ExperiencedRevenue = 0;
+      state.under12NewbieNewBuildingRevenue = 0;
+      state.under12NewbieOtherRevenue = 0;
+      state.under12ExperiencedNewBuildingRevenue = 0;
+      state.under12ExperiencedOtherRevenue = 0;
       state.under12ExperiencedCount = 0;
       state.under12RopScore = 0;
       state.under12Salary = 0;
@@ -2696,9 +2804,12 @@
       state.displayedPersonalDealBonus = 0;
       state.displayedFinalIncome = 0;
 
-      inputs.revenue.value = '';
-      inputs.under12NewbieRevenue.value = '';
-      inputs.under12ExperiencedRevenue.value = '';
+      inputs.newBuildingRevenue.value = '';
+      inputs.secondaryRevenue.value = '';
+      inputs.under12NewbieNewBuildingRevenue.value = '';
+      inputs.under12NewbieOtherRevenue.value = '';
+      inputs.under12ExperiencedNewBuildingRevenue.value = '';
+      inputs.under12ExperiencedOtherRevenue.value = '';
       inputs.under12ExperiencedCount.value = '';
       inputs.under12ManualKpiBonus.value = '';
       inputs.under12PersonalDealRevenue.value = '';
@@ -2728,9 +2839,12 @@
     }
 
     function hasCalculatorValues() {
-      return state.teamRevenue > 0 ||
-        state.under12NewbieRevenue > 0 ||
-        state.under12ExperiencedRevenue > 0 ||
+      return state.newBuildingRevenue > 0 ||
+        state.secondaryRevenue > 0 ||
+        state.under12NewbieNewBuildingRevenue > 0 ||
+        state.under12NewbieOtherRevenue > 0 ||
+        state.under12ExperiencedNewBuildingRevenue > 0 ||
+        state.under12ExperiencedOtherRevenue > 0 ||
         state.under12ExperiencedCount > 0 ||
         state.under12RopScore > 0 ||
         state.under12Salary > 0 ||
@@ -3095,12 +3209,23 @@
       updateUI(true);
     });
 
-    inputs.revenue.addEventListener('input', (e) => {
-      let rawValue = parseNum(e.target.value);
-      state.teamRevenue = rawValue;
-      formatNumberInput(e.target, ' ₽');
+    const updateSeniorRevenue = () => {
+      state.teamRevenue =
+        state.newBuildingRevenue * 0.90 +
+        state.secondaryRevenue * 0.98;
       updateUI();
-    });
+    };
+
+    const setupRevenueCategoryInput = (input, stateKey) => {
+      input.addEventListener('input', (e) => {
+        state[stateKey] = parseNum(e.target.value);
+        formatNumberInput(e.target, ' ₽');
+        updateSeniorRevenue();
+      });
+    };
+
+    setupRevenueCategoryInput(inputs.newBuildingRevenue, 'newBuildingRevenue');
+    setupRevenueCategoryInput(inputs.secondaryRevenue, 'secondaryRevenue');
 
     inputs.teamSizeSlider.addEventListener('input', (e) => {
       state.teamSize = parseInt(e.target.value, 10);
@@ -3149,8 +3274,28 @@
 
     setupNumberInput(inputs.manualKpiBonus, 'seniorManualKpiBonus', { suffix: ' ₽' });
     setupNumberInput(inputs.seniorPersonalDealRevenue, 'seniorPersonalDealRevenue', { suffix: ' ₽' });
-    setupNumberInput(inputs.under12NewbieRevenue, 'under12NewbieRevenue');
-    setupNumberInput(inputs.under12ExperiencedRevenue, 'under12ExperiencedRevenue');
+    const updateUnder12Revenue = () => {
+      state.under12NewbieRevenue =
+        state.under12NewbieNewBuildingRevenue * 0.90 +
+        state.under12NewbieOtherRevenue * 0.98;
+      state.under12ExperiencedRevenue =
+        state.under12ExperiencedNewBuildingRevenue * 0.90 +
+        state.under12ExperiencedOtherRevenue * 0.98;
+      updateUI();
+    };
+
+    const setupUnder12RevenueInput = (input, stateKey) => {
+      input.addEventListener('input', (e) => {
+        state[stateKey] = parseNum(e.target.value);
+        formatNumberInput(e.target, ' ₽');
+        updateUnder12Revenue();
+      });
+    };
+
+    setupUnder12RevenueInput(inputs.under12NewbieNewBuildingRevenue, 'under12NewbieNewBuildingRevenue');
+    setupUnder12RevenueInput(inputs.under12NewbieOtherRevenue, 'under12NewbieOtherRevenue');
+    setupUnder12RevenueInput(inputs.under12ExperiencedNewBuildingRevenue, 'under12ExperiencedNewBuildingRevenue');
+    setupUnder12RevenueInput(inputs.under12ExperiencedOtherRevenue, 'under12ExperiencedOtherRevenue');
     setupNumberInput(inputs.under12ExperiencedCount, 'under12ExperiencedCount', { liveFormat: false });
     setupNumberInput(inputs.under12ManualKpiBonus, 'under12ManualKpiBonus', { suffix: ' ₽' });
     setupNumberInput(inputs.under12PersonalDealRevenue, 'under12PersonalDealRevenue', { suffix: ' ₽' });
